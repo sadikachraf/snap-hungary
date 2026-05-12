@@ -489,8 +489,7 @@ pickerOpts.forEach(opt=>opt.addEventListener('click',()=>updatePicker(opt)));
 updatePicker(document.querySelector('.pick-bundle'));
 
 // ── WEBHOOK ──
-// Replace this with the Hungary Google Sheets Apps Script Web App URL when ready.
-const WEBHOOK_URL='PASTE_HUNGARY_GOOGLE_SHEETS_WEB_APP_URL_HERE';
+const WEBHOOK_URL='https://script.google.com/macros/s/AKfycbwfJJQ_HJpJp5j7jM5Pri9MlsPxdwNa2qaeteKTINJLMIpTs94cjix1e-eVIZCRIpHerg/exec';
 
 function getProductSku(product){
   const m={'Testo Booster':'PMLD-1748','Nitric Oxide':'PMLD-1742','Prosztata támogatás':'PMLD-1747','TRIO Bundle':'PMLD-TRIO-BUNDLE'};
@@ -499,22 +498,46 @@ function getProductSku(product){
 function buildOrderPayload(){
   order.totalPrice=order.price+order.upsellPrice;
   order.quantity=order.upsell?2:1;
-  return{name:order.name,phone:order.phone,street:order.street,city:order.city,zip:order.zip,product:order.product,quantity:order.quantity,price:order.price,upsell:order.upsell,upsellPrice:order.upsellPrice,totalPrice:order.totalPrice,source:'snap-hu'};
+  return {
+    sku:getProductSku(order.product),
+    price:order.totalPrice,
+    customer_name:order.name,
+    customer_phone:order.phone,
+    city:order.city,
+    zip_code:order.zip,
+    customer_address:order.street,
+    customer_email:'',
+    quantity:order.quantity,
+    note:'Product: '+order.product+' | Base price: '+order.price+' Ft | Upsell: '+(order.upsell?'yes +'+order.upsellPrice+' Ft':'no')+' | Source: snap-hu',
+    date:new Date().toISOString()
+  };
 }
 function sendOrderToSheet(payload,useBeacon){
   const body=JSON.stringify(payload);
-  if(useBeacon&&navigator.sendBeacon){try{navigator.sendBeacon(WEBHOOK_URL,new Blob([body],{type:'application/json'}));return}catch(e){}}
-  fetch(WEBHOOK_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body}).catch(e=>console.error('Sheet error:',e));
+  if(useBeacon&&navigator.sendBeacon){
+    try{
+      navigator.sendBeacon(WEBHOOK_URL,new Blob([body],{type:'text/plain;charset=utf-8'}));
+      return;
+    }catch(e){}
+  }
+
+  // Google Apps Script accepts text/plain JSON reliably from static landing pages.
+  fetch(WEBHOOK_URL,{
+    method:'POST',
+    mode:'no-cors',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body:body
+  }).catch(e=>console.error('Sheet error:',e));
 }
 function firePurchase(payload){
-  if(!purchaseEventFired&&typeof ttq!=='undefined'){purchaseEventFired=true;ttq.track('Purchase',{content_type:'product',content_id:getProductSku(order.product),content_name:order.product,quantity:payload.quantity,value:Number(payload.totalPrice),currency:'HUF'});}
-  if(!metaPurchaseEventFired&&typeof fbq!=='undefined'){metaPurchaseEventFired=true;fbq('track','Purchase',{content_type:'product',content_ids:[getProductSku(order.product)],content_name:order.product,num_items:payload.quantity,value:Number(payload.totalPrice),currency:'HUF'});}
+  if(!purchaseEventFired&&typeof ttq!=='undefined'){purchaseEventFired=true;ttq.track('Purchase',{content_type:'product',content_id:getProductSku(order.product),content_name:order.product,quantity:payload.quantity,value:Number(payload.price),currency:'HUF'});}
+  if(!metaPurchaseEventFired&&typeof fbq!=='undefined'){metaPurchaseEventFired=true;fbq('track','Purchase',{content_type:'product',content_ids:[getProductSku(order.product)],content_name:order.product,num_items:payload.quantity,value:Number(payload.price),currency:'HUF'});}
 }
 function finalizeOrder(useBeacon){
   if(orderFinalized)return;orderFinalized=true;
   if(upsellFallbackTimer)clearTimeout(upsellFallbackTimer);
   const payload=buildOrderPayload();
-  console.log('SNAP RO ORDER',payload);
+  console.log('SNAP HU ORDER',payload);
   sendOrderToSheet(payload,useBeacon);
   firePurchase(payload);
 }
