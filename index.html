@@ -98,6 +98,14 @@ window.__loadMarketingPixels=function(){
 if('requestIdleCallback' in window){requestIdleCallback(window.__loadMarketingPixels,{timeout:1800});}
 else{window.addEventListener('load',function(){setTimeout(window.__loadMarketingPixels,700);});}
 </script>
+<!-- Microsoft Clarity — ID: wro169symf -->
+<script type="text/javascript">
+(function(c,l,a,r,i,t,y){
+  c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+  t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+  y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+})(window, document, "clarity", "script", "wro169symf");
+</script>
 </head>
 <body>
 <nav class="nav" id="floatingNav"><img decoding="async" src="images/snap-logo-no-r.webp" alt="SNAP"></nav>
@@ -163,7 +171,7 @@ else{window.addEventListener('load',function(){setTimeout(window.__loadMarketing
     <div class="picker-wrap fade">
       <div class="picker-visual">
         <div class="picker-img-wrap">
-          <img loading="lazy" decoding="async" id="pickerImg" src="images/Prostate_NO_Booster_Testo_90_1_e89b5453-0a41-4884-9c3c-1ebcb445b5a0.webp" alt="Produs SNAP">
+          <img loading="lazy" decoding="async" id="pickerImg" src="images/Big_Boy_Bundle_-_Prostate_Testo_Nitric_Oxide_90ct_Main_Image_1.webp" alt="SNAP TRIO">
         </div>
         <div class="picker-math" id="pickerMath">
           <div class="math-row"><span>Prosztata támogatás</span><span>12 990 Ft</span></div>
@@ -440,6 +448,17 @@ else{window.addEventListener('load',function(){setTimeout(window.__loadMarketing
 <script>
 // ── ORDER STATE ──
 let order={name:"",phone:"",street:"",city:"",zip:"",product:"TRIO Bundle",quantity:1,price:24990,upsell:false,upsellPrice:0,totalPrice:24990};
+
+// ── COPY PROTECTION — Level 1 ──
+document.addEventListener('contextmenu',function(e){e.preventDefault();return false;});
+document.addEventListener('selectstart',function(e){if(!['INPUT','TEXTAREA'].includes(e.target.tagName))e.preventDefault();});
+document.addEventListener('dragstart',function(e){e.preventDefault();return false;});
+document.addEventListener('keydown',function(e){
+  if(e.key==='F12'){e.preventDefault();return false;}
+  if(e.ctrlKey&&['u','s','a'].includes(e.key.toLowerCase())){e.preventDefault();return false;}
+  if(e.ctrlKey&&e.shiftKey&&['i','j','c'].includes(e.key.toLowerCase())){e.preventDefault();return false;}
+  if(e.metaKey&&['u','s','a'].includes(e.key.toLowerCase())){e.preventDefault();return false;}
+});
 const upsellEl=document.getElementById('upsell'),thankyou=document.getElementById('thankyou'),floatingNav=document.getElementById('floatingNav'),stickyCta=document.getElementById('stickyCta');
 let lastScrollY=window.scrollY,orderFinalized=false,purchaseEventFired=false,metaPurchaseEventFired=false,upsellFallbackTimer=null;
 
@@ -524,20 +543,21 @@ function buildOrderPayload(){
 }
 function sendOrderToSheet(payload,useBeacon){
   const body=JSON.stringify(payload);
+  try{localStorage.setItem('snap_last_order',body);}catch(e){}
   if(useBeacon&&navigator.sendBeacon){
-    try{
-      navigator.sendBeacon(WEBHOOK_URL,new Blob([body],{type:'text/plain;charset=utf-8'}));
-      return;
-    }catch(e){}
+    try{navigator.sendBeacon(WEBHOOK_URL,new Blob([body],{type:'text/plain;charset=utf-8'}));return;}catch(e){}
   }
-
-  // Google Apps Script accepts text/plain JSON reliably from static landing pages.
-  fetch(WEBHOOK_URL,{
-    method:'POST',
-    mode:'no-cors',
-    headers:{'Content-Type':'text/plain;charset=utf-8'},
-    body:body
-  }).catch(e=>console.error('Sheet error:',e));
+  (async()=>{
+    for(let attempt=0;attempt<3;attempt++){
+      try{
+        await fetch(WEBHOOK_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:body});
+        break;
+      }catch(e){
+        if(attempt===2)console.error('Webhook failed after 3 attempts',e);
+        else await new Promise(r=>setTimeout(r,1000*(attempt+1)));
+      }
+    }
+  })();
 }
 function firePurchase(payload){
   if(!purchaseEventFired&&typeof ttq!=='undefined'){purchaseEventFired=true;ttq.track('Purchase',{content_type:'product',content_id:getProductSku(order.product),content_name:order.product,quantity:payload.quantity,value:Number(payload.price),currency:'HUF'});}
