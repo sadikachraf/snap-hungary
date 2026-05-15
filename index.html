@@ -98,6 +98,14 @@ window.__loadMarketingPixels=function(){
 if('requestIdleCallback' in window){requestIdleCallback(window.__loadMarketingPixels,{timeout:1800});}
 else{window.addEventListener('load',function(){setTimeout(window.__loadMarketingPixels,700);});}
 </script>
+<!-- Microsoft Clarity — wro169symf -->
+<script type="text/javascript">
+(function(c,l,a,r,i,t,y){
+  c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+  t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+  y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+})(window, document, "clarity", "script", "wro169symf");
+</script>
 </head>
 <body>
 <nav class="nav" id="floatingNav"><img decoding="async" src="images/snap-logo-no-r.webp" alt="SNAP"></nav>
@@ -162,9 +170,6 @@ else{window.addEventListener('load',function(){setTimeout(window.__loadMarketing
     </div>
     <div class="picker-wrap fade">
       <div class="picker-visual">
-        <div class="picker-img-wrap">
-          <img loading="lazy" decoding="async" id="pickerImg" src="images/Prostate_NO_Booster_Testo_90_1_e89b5453-0a41-4884-9c3c-1ebcb445b5a0.webp" alt="Produs SNAP">
-        </div>
         <div class="picker-math" id="pickerMath">
           <div class="math-row"><span>Prosztata támogatás</span><span>12 990 Ft</span></div>
           <div class="math-row"><span>Testo Booster</span><span>12 990 Ft</span></div>
@@ -480,16 +485,14 @@ document.querySelectorAll('[data-scroll]').forEach(b=>b.addEventListener('click'
 // ── PICKER LOGIC ──
 const pickerOpts=document.querySelectorAll('.pick-opt');
 const pickerCta=document.getElementById('pickerCta');
-const pickerImg=document.getElementById('pickerImg');
 const pickerMath=document.getElementById('pickerMath');
 const selectedInline=document.getElementById('selectedInline');
 
 function updatePicker(opt){
   pickerOpts.forEach(o=>o.classList.remove('is-selected'));
   opt.classList.add('is-selected');
-  const product=opt.dataset.product,price=Number(opt.dataset.price),img=opt.dataset.img;
+  const product=opt.dataset.product,price=Number(opt.dataset.price);
   order.product=product;order.price=price;order.totalPrice=price;
-  if(pickerImg&&img){pickerImg.style.opacity='0';setTimeout(()=>{pickerImg.src=img;pickerImg.style.opacity='1'},180)}
   if(selectedInline){
     selectedInline.textContent='📦 '+product+' — '+price.toLocaleString('hu-HU')+' Ft';
   }
