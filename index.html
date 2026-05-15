@@ -98,6 +98,14 @@ window.__loadMarketingPixels=function(){
 if('requestIdleCallback' in window){requestIdleCallback(window.__loadMarketingPixels,{timeout:1800});}
 else{window.addEventListener('load',function(){setTimeout(window.__loadMarketingPixels,700);});}
 </script>
+<!-- Microsoft Clarity — wro169symf -->
+<script type="text/javascript">
+(function(c,l,a,r,i,t,y){
+  c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+  t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+  y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+})(window, document, "clarity", "script", "wro169symf");
+</script>
 </head>
 <body>
 <nav class="nav" id="floatingNav"><img decoding="async" src="images/snap-logo-no-r.webp" alt="SNAP"></nav>
@@ -162,9 +170,6 @@ else{window.addEventListener('load',function(){setTimeout(window.__loadMarketing
     </div>
     <div class="picker-wrap fade">
       <div class="picker-visual">
-        <div class="picker-img-wrap">
-          <img loading="lazy" decoding="async" id="pickerImg" src="images/Prostate_NO_Booster_Testo_90_1_e89b5453-0a41-4884-9c3c-1ebcb445b5a0.webp" alt="Produs SNAP">
-        </div>
         <div class="picker-math" id="pickerMath">
           <div class="math-row"><span>Prosztata támogatás</span><span>12 990 Ft</span></div>
           <div class="math-row"><span>Testo Booster</span><span>12 990 Ft</span></div>
@@ -480,16 +485,14 @@ document.querySelectorAll('[data-scroll]').forEach(b=>b.addEventListener('click'
 // ── PICKER LOGIC ──
 const pickerOpts=document.querySelectorAll('.pick-opt');
 const pickerCta=document.getElementById('pickerCta');
-const pickerImg=document.getElementById('pickerImg');
 const pickerMath=document.getElementById('pickerMath');
 const selectedInline=document.getElementById('selectedInline');
 
 function updatePicker(opt){
   pickerOpts.forEach(o=>o.classList.remove('is-selected'));
   opt.classList.add('is-selected');
-  const product=opt.dataset.product,price=Number(opt.dataset.price),img=opt.dataset.img;
+  const product=opt.dataset.product,price=Number(opt.dataset.price);
   order.product=product;order.price=price;order.totalPrice=price;
-  if(pickerImg&&img){pickerImg.style.opacity='0';setTimeout(()=>{pickerImg.src=img;pickerImg.style.opacity='1'},180)}
   if(selectedInline){
     selectedInline.textContent='📦 '+product+' — '+price.toLocaleString('hu-HU')+' Ft';
   }
@@ -505,16 +508,10 @@ function getProductSku(product){
   const m={'Testo Booster':'PMLD-1748','Nitric Oxide':'PMLD-1742','Prosztata támogatás':'PMLD-1747','TRIO Bundle':'PMLD-TRIO-BUNDLE'};
   return m[product]||'PMLD-UNKNOWN';
 }
-function makeOrderId(){
-  return 'SNAP-HU-'+Date.now()+'-'+Math.random().toString(36).slice(2,8).toUpperCase();
-}
-function buildOrderPayload(stage){
+function buildOrderPayload(){
   order.totalPrice=order.price+order.upsellPrice;
   order.quantity=order.upsell?2:1;
-  if(!order.order_id)order.order_id=makeOrderId();
   return {
-    order_id:order.order_id,
-    order_stage:stage||'base_order',
     sku:getProductSku(order.product),
     price:order.totalPrice,
     customer_name:order.name,
@@ -524,99 +521,55 @@ function buildOrderPayload(stage){
     customer_address:order.street,
     customer_email:'',
     quantity:order.quantity,
-    note:'Order ID: '+order.order_id+' | Stage: '+(stage||'base_order')+' | Product: '+order.product+' | Base price: '+order.price+' Ft | Upsell: '+(order.upsell?'yes +'+order.upsellPrice+' Ft':'no')+' | Source: snap-hu',
+    note:'Product: '+order.product+' | Base price: '+order.price+' Ft | Upsell: '+(order.upsell?'yes +'+order.upsellPrice+' Ft':'no')+' | Source: snap-hu',
     date:new Date().toISOString()
   };
 }
-function backupOrderLocally(payload,status){
-  try{
-    const key='snap_hu_order_backups';
-    const list=JSON.parse(localStorage.getItem(key)||'[]');
-    list.push({status:status||'sent_attempt',payload:payload,saved_at:new Date().toISOString()});
-    localStorage.setItem(key,JSON.stringify(list.slice(-25)));
-  }catch(e){}
-}
 function sendOrderToSheet(payload,useBeacon){
   const body=JSON.stringify(payload);
-  backupOrderLocally(payload,'attempt');
-
   if(useBeacon&&navigator.sendBeacon){
     try{
-      const ok=navigator.sendBeacon(WEBHOOK_URL,new Blob([body],{type:'text/plain;charset=utf-8'}));
-      if(ok)return Promise.resolve();
+      navigator.sendBeacon(WEBHOOK_URL,new Blob([body],{type:'text/plain;charset=utf-8'}));
+      return;
     }catch(e){}
   }
 
-  // text/plain avoids preflight and is the safest static-page method for Google Apps Script.
-  return fetch(WEBHOOK_URL,{
+  // Google Apps Script accepts text/plain JSON reliably from static landing pages.
+  fetch(WEBHOOK_URL,{
     method:'POST',
     mode:'no-cors',
-    keepalive:true,
     headers:{'Content-Type':'text/plain;charset=utf-8'},
     body:body
-  }).catch(function(e){
-    console.error('Sheet error, retrying once:',e);
-    return new Promise(function(resolve){setTimeout(resolve,900);}).then(function(){
-      return fetch(WEBHOOK_URL,{
-        method:'POST',
-        mode:'no-cors',
-        keepalive:true,
-        headers:{'Content-Type':'text/plain;charset=utf-8'},
-        body:body
-      });
-    });
-  }).catch(function(e){
-    console.error('Sheet final error:',e);
-    backupOrderLocally(payload,'failed_after_retry');
-  });
+  }).catch(e=>console.error('Sheet error:',e));
 }
 function firePurchase(payload){
   if(!purchaseEventFired&&typeof ttq!=='undefined'){purchaseEventFired=true;ttq.track('Purchase',{content_type:'product',content_id:getProductSku(order.product),content_name:order.product,quantity:payload.quantity,value:Number(payload.price),currency:'HUF'});}
   if(!metaPurchaseEventFired&&typeof fbq!=='undefined'){metaPurchaseEventFired=true;fbq('track','Purchase',{content_type:'product',content_ids:[getProductSku(order.product)],content_name:order.product,num_items:payload.quantity,value:Number(payload.price),currency:'HUF'});}
 }
-function submitBaseOrder(){
-  if(order.baseOrderSent)return;
-  order.baseOrderSent=true;
-  const payload=buildOrderPayload('base_order');
-  console.log('SNAP HU BASE ORDER',payload);
-  sendOrderToSheet(payload,false);
+function finalizeOrder(useBeacon){
+  if(orderFinalized)return;orderFinalized=true;
+  if(upsellFallbackTimer)clearTimeout(upsellFallbackTimer);
+  const payload=buildOrderPayload();
+  console.log('SNAP HU ORDER',payload);
+  sendOrderToSheet(payload,useBeacon);
   firePurchase(payload);
 }
-function submitUpsellUpdate(){
-  const payload=buildOrderPayload('upsell_added');
-  console.log('SNAP HU UPSELL UPDATE',payload);
-  sendOrderToSheet(payload,false);
-}
-function showThankYou(){
-  upsellEl.classList.remove('show');
-  thankyou.classList.add('show');
-}
+function fireOrder(){finalizeOrder(false);upsellEl.classList.remove('show');thankyou.classList.add('show');}
 
 // ── FORM SUBMIT ──
 document.getElementById('orderForm').addEventListener('submit',e=>{
   e.preventDefault();
-  const submitBtn=e.target.querySelector('button[type="submit"]');
-  if(submitBtn){submitBtn.disabled=true;submitBtn.textContent='RENDELÉS RÖGZÍTVE ✅';}
   const fd=new FormData(e.target);
-  order.name=(fd.get('name')||'').trim();order.phone=(fd.get('phone')||'').trim();
-  order.street=(fd.get('street')||'').trim();order.city=(fd.get('city')||'').trim();order.zip=(fd.get('zip')||'').trim();
-  order.upsell=false;order.upsellPrice=0;order.totalPrice=order.price;order.quantity=1;
-  order.order_id=makeOrderId();order.baseOrderSent=false;
-
-  // Critical safety fix: send the main order immediately BEFORE the upsell modal.
-  // The upsell is now only an optional update, so mobile users cannot lose the order by closing/locking the phone.
-  submitBaseOrder();
-
+  order.name=fd.get('name').trim();order.phone=fd.get('phone').trim();
+  order.street=fd.get('street').trim();order.city=fd.get('city').trim();order.zip=fd.get('zip').trim();
+  order.upsell=false;order.upsellPrice=0;
   upsellEl.classList.add('show');
+  if(upsellFallbackTimer)clearTimeout(upsellFallbackTimer);
+  upsellFallbackTimer=setTimeout(()=>{if(!orderFinalized&&upsellEl.classList.contains('show'))fireOrder();},30000);
 });
-document.getElementById('yesUpsell').onclick=()=>{order.upsell=true;order.upsellPrice=12990;submitUpsellUpdate();showThankYou();};
-document.getElementById('noUpsell').onclick=()=>{order.upsell=false;order.upsellPrice=0;showThankYou();};
-window.addEventListener('pagehide',()=>{
-  if(order.name&&order.phone&&!order.baseOrderSent){
-    const payload=buildOrderPayload('base_order_pagehide_backup');
-    sendOrderToSheet(payload,true);
-  }
-});
+document.getElementById('yesUpsell').onclick=()=>{order.upsell=true;order.upsellPrice=12990;fireOrder()};
+document.getElementById('noUpsell').onclick=()=>{order.upsell=false;order.upsellPrice=0;fireOrder()};
+window.addEventListener('pagehide',()=>{if(!orderFinalized&&upsellEl.classList.contains('show')){order.upsell=false;order.upsellPrice=0;finalizeOrder(true);}});
 
 // ── INGREDIENTS MODAL ──
 const ingModal=document.getElementById('ingModal'),tabs=[...document.querySelectorAll('.ing-tab')],panels=[...document.querySelectorAll('.ing-panel')];
