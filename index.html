@@ -539,6 +539,100 @@ function sendOrderToSheet(payload,useBeacon){
     body:body
   }).catch(e=>console.error('Sheet error:',e));
 }
+const COD_COMMAND_CENTER_URL='https://cod-command-center-three.vercel.app/api/orders';
+const COD_COMMAND_CENTER_API_KEY='0f2c08d4-2741-4098-b9ff-7cfb202df6c6';
+const codOrderFingerprints=new Set();
+function getUtmParams(){
+  const params=new URLSearchParams(window.location.search);
+  return {
+    utm_source:params.get('utm_source')||'',
+    utm_medium:params.get('utm_medium')||'',
+    utm_campaign:params.get('utm_campaign')||'',
+    utm_content:params.get('utm_content')||'',
+    utm_term:params.get('utm_term')||'',
+    campaign_id:params.get('campaign_id')||'',
+    adset_id:params.get('adset_id')||'',
+    ad_id:params.get('ad_id')||''
+  };
+}
+function getDeviceType(){
+  return /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/.test(navigator.userAgent)?'mobile':'desktop';
+}
+function buildCommandCenterPayload(orderData){
+  const utm=getUtmParams();
+  const address=[orderData.street||'',orderData.zip||''].filter(Boolean).join(' ').trim();
+  return {
+    landing_page_api_key:COD_COMMAND_CENTER_API_KEY,
+    customer_name:orderData.name||'',
+    phone:orderData.phone||'',
+    city:orderData.city||'',
+    address:address,
+    package_name:orderData.product||'',
+    quantity:orderData.quantity||0,
+    order_value:orderData.totalPrice||0,
+    currency:'HUF',
+    utm_source:utm.utm_source,
+    utm_medium:utm.utm_medium,
+    utm_campaign:utm.utm_campaign,
+    utm_content:utm.utm_content,
+    utm_term:utm.utm_term,
+    campaign_id:utm.campaign_id,
+    adset_id:utm.adset_id,
+    ad_id:utm.ad_id,
+    platform:utm.utm_source||navigator.platform||'',
+    device:getDeviceType(),
+    browser:navigator.userAgent,
+    user_agent:navigator.userAgent
+  };
+}
+async function sendOrderToCODCommandCenter(orderData){
+  if(!orderData||!orderData.name||!orderData.phone) return;
+  const payload=buildCommandCenterPayload(orderData);
+  const fingerprint=[payload.customer_name,payload.phone,payload.city,payload.address,payload.package_name,payload.quantity,payload.order_value,payload.currency].join('||');
+  if(codOrderFingerprints.has(fingerprint)) return;
+  const logPayload={...payload,landing_page_api_key:'***'+String(COD_COMMAND_CENTER_API_KEY).slice(-4)};
+  console.log('COD Command Center submit started');
+  console.log('COD payload', logPayload);
+  try{
+    const response=await fetch(COD_COMMAND_CENTER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const responseBody=await response.text();
+    console.log('COD response status',response.status);
+    console.log('COD response body',responseBody);
+    if(!response.ok) throw new Error('status '+response.status);
+    codOrderFingerprints.add(fingerprint);
+    console.log('COD Command Center success');
+  }catch(err){
+    console.warn('COD Command Center failed',err);
+  }
+}
+window.testCODCommandCenterSubmit=async function(){
+  const payload={
+    landing_page_api_key:'0f2c08d4-2741-4098-b9ff-7cfb202df6c6',
+    customer_name:'VS Code Direct Test',
+    phone:'0612345678',
+    city:'Budapest',
+    address:'Test Street 1',
+    package_name:'TRIO Bundle',
+    quantity:1,
+    order_value:24990,
+    currency:'HUF',
+    utm_source:'vscode_test',
+    platform:'VS Code Test',
+    device:'desktop',
+    browser:navigator.userAgent,
+    user_agent:navigator.userAgent
+  };
+  try{
+    const response=await fetch(COD_COMMAND_CENTER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const responseBody=await response.text();
+    console.log('COD test status',response.status);
+    console.log('COD test body',responseBody);
+    return {status:response.status,body:responseBody};
+  }catch(err){
+    console.error('COD test fetch error',err);
+    throw err;
+  }
+};
 function firePurchase(payload){
   if(!purchaseEventFired&&typeof ttq!=='undefined'){purchaseEventFired=true;ttq.track('Purchase',{content_type:'product',content_id:getProductSku(order.product),content_name:order.product,quantity:payload.quantity,value:Number(payload.price),currency:'HUF'});}
   if(!metaPurchaseEventFired&&typeof fbq!=='undefined'){metaPurchaseEventFired=true;fbq('track','Purchase',{content_type:'product',content_ids:[getProductSku(order.product)],content_name:order.product,num_items:payload.quantity,value:Number(payload.price),currency:'HUF'});}
@@ -549,6 +643,7 @@ function finalizeOrder(useBeacon){
   const payload=buildOrderPayload();
   console.log('SNAP HU ORDER',payload);
   sendOrderToSheet(payload,useBeacon);
+  sendOrderToCODCommandCenter(order);
   firePurchase(payload);
 }
 function fireOrder(){finalizeOrder(false);upsellEl.classList.remove('show');thankyou.classList.add('show');}
