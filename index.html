@@ -509,9 +509,33 @@ updatePicker(document.querySelector('.pick-bundle'));
 // ── WEBHOOK ──
 const WEBHOOK_URL='https://script.google.com/macros/s/AKfycbwfJJQ_HJpJp5j7jM5Pri9MlsPxdwNa2qaeteKTINJLMIpTs94cjix1e-eVIZCRIpHerg/exec';
 
+// COD Command Center backup order endpoint.
+// Paste the API key from: COD Command Center → Landing Pages → SNAP TRIO HU Main LP.
+const COD_COMMAND_CENTER_URL='https://cod-command-center.vercel.app/api/orders';
+const COD_COMMAND_CENTER_API_KEY='PASTE_API_KEY_HERE';
+let lastCODCommandCenterOrderSignature='';
+
 function getProductSku(product){
   const m={'Testo Booster':'PMLD-1748','Nitric Oxide':'PMLD-1742','Prosztata támogatás':'PMLD-1747','TRIO Bundle':'PMLD-TRIO-BUNDLE'};
   return m[product]||'PMLD-UNKNOWN';
+}
+function getTrackingParams(){
+  const params=new URLSearchParams(window.location.search);
+  const getParam=(name)=>params.get(name)||'';
+  return {
+    utm_source:getParam('utm_source'),
+    utm_medium:getParam('utm_medium'),
+    utm_campaign:getParam('utm_campaign'),
+    utm_content:getParam('utm_content'),
+    utm_term:getParam('utm_term'),
+    campaign_id:getParam('campaign_id')||getParam('campaignid')||getParam('campaign'),
+    adset_id:getParam('adset_id')||getParam('adsetid')||getParam('adgroup_id'),
+    ad_id:getParam('ad_id')||getParam('adid'),
+    platform:getParam('platform')||getParam('utm_source'),
+    device:/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)?'mobile':'desktop',
+    browser:navigator.userAgentData&&navigator.userAgentData.brands?navigator.userAgentData.brands.map(b=>b.brand).join(', '):navigator.userAgent,
+    user_agent:navigator.userAgent
+  };
 }
 function buildOrderPayload(){
   order.totalPrice=order.price+order.upsellPrice;
@@ -530,8 +554,24 @@ function buildOrderPayload(){
     date:new Date().toISOString()
   };
 }
+function buildCODCommandCenterPayload(payload){
+  const tracking=getTrackingParams();
+  return {
+    landing_page_api_key:COD_COMMAND_CENTER_API_KEY,
+    customer_name:payload.customer_name||order.name,
+    phone:payload.customer_phone||order.phone,
+    city:payload.city||order.city,
+    address:[payload.customer_address||order.street,payload.zip_code||order.zip].filter(Boolean).join(', '),
+    package_name:order.product,
+    quantity:Number(payload.quantity||order.quantity||1),
+    order_value:Number(payload.price||order.totalPrice||order.price||0),
+    currency:'HUF',
+    ...tracking
+  };
+}
 function sendOrderToSheet(payload,useBeacon){
   const body=JSON.stringify(payload);
+  console.log('Submitting to Google Sheets');
   if(useBeacon&&navigator.sendBeacon){
     try{
       navigator.sendBeacon(WEBHOOK_URL,new Blob([body],{type:'text/plain;charset=utf-8'}));
@@ -547,6 +587,54 @@ function sendOrderToSheet(payload,useBeacon){
     body:body
   }).catch(e=>console.error('Sheet error:',e));
 }
+function getCODCommandCenterOrderSignature(codPayload){
+  return [
+    (codPayload.customer_name||'').trim().toLowerCase(),
+    (codPayload.phone||'').replace(/\s+/g,''),
+    (codPayload.city||'').trim().toLowerCase(),
+    (codPayload.address||'').trim().toLowerCase(),
+    (codPayload.package_name||'').trim().toLowerCase(),
+    String(codPayload.quantity||''),
+    String(codPayload.order_value||''),
+    codPayload.currency||''
+  ].join('|');
+}
+function sendOrderToCODCommandCenter(payload){
+  if(!COD_COMMAND_CENTER_API_KEY||COD_COMMAND_CENTER_API_KEY==='PASTE_API_KEY_HERE'){
+    console.warn('COD Command Center skipped: missing landing page API key');
+    return;
+  }
+
+  const codPayload=buildCODCommandCenterPayload(payload);
+  const orderSignature=getCODCommandCenterOrderSignature(codPayload);
+
+  // Prevent only the exact same finalized order from being submitted twice.
+  // If the customer changes name, phone, address, package, quantity, or value, allow the new submission.
+  if(orderSignature&&orderSignature===lastCODCommandCenterOrderSignature){
+    console.warn('COD Command Center skipped: duplicate exact same order');
+    return;
+  }
+  lastCODCommandCenterOrderSignature=orderSignature;
+
+  const body=JSON.stringify(codPayload);
+  console.log('Submitting to COD Command Center');
+
+  fetch(COD_COMMAND_CENTER_URL,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:body,
+    keepalive:true
+  })
+  .then(async res=>{
+    let data=null;
+    try{data=await res.json();}catch(e){}
+    if(!res.ok||!data||data.success!==true){
+      throw new Error((data&&data.error)||('HTTP '+res.status));
+    }
+    console.log('COD Command Center success',data.order_number||'saved');
+  })
+  .catch(e=>console.error('COD Command Center failed:',e));
+}
 function firePurchase(payload){
   if(!purchaseEventFired&&typeof ttq!=='undefined'){purchaseEventFired=true;ttq.track('Purchase',{content_type:'product',content_id:getProductSku(order.product),content_name:order.product,quantity:payload.quantity,value:Number(payload.price),currency:'HUF'});}
   if(!metaPurchaseEventFired&&typeof fbq!=='undefined'){metaPurchaseEventFired=true;fbq('track','Purchase',{content_type:'product',content_ids:[getProductSku(order.product)],content_name:order.product,num_items:payload.quantity,value:Number(payload.price),currency:'HUF'});}
@@ -557,6 +645,7 @@ function finalizeOrder(useBeacon){
   const payload=buildOrderPayload();
   console.log('SNAP HU ORDER',payload);
   sendOrderToSheet(payload,useBeacon);
+  sendOrderToCODCommandCenter(payload);
   firePurchase(payload);
 }
 function fireOrder(){finalizeOrder(false);upsellEl.classList.remove('show');thankyou.classList.add('show');}
