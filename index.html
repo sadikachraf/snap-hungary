@@ -511,6 +511,24 @@ function getOrCreatePurchaseEventId(){
   }
   return order.event_id;
 }
+// COD duplicate protection: same phone in same browser does not fire another Meta Purchase.
+function normalizePhone(phone){
+  return String(phone||'').replace(/\D/g,'');
+}
+function getPurchaseDedupKey(phone){
+  return 'snap_hu_purchase_phone_'+normalizePhone(phone);
+}
+function hasPhonePurchaseAlreadyFired(phone){
+  const key=getPurchaseDedupKey(phone);
+  return !!localStorage.getItem(key);
+}
+function markPhonePurchaseFired(phone,eventId){
+  const key=getPurchaseDedupKey(phone);
+  localStorage.setItem(key,JSON.stringify({
+    event_id:eventId,
+    time:new Date().toISOString()
+  }));
+}
 function buildOrderPayload(){
   order.totalPrice=order.price+order.upsellPrice;
   order.quantity=order.upsell?2:1;
@@ -518,6 +536,7 @@ function buildOrderPayload(){
   return {
     sku:getProductSku(order.product),
     event_id:order.event_id,
+    is_duplicate_phone_purchase:hasPhonePurchaseAlreadyFired(order.phone),
     price:order.totalPrice,
     customer_name:order.name,
     customer_phone:order.phone,
@@ -572,6 +591,7 @@ function buildCommandCenterPayload(orderData){
   return {
     landing_page_api_key:COD_COMMAND_CENTER_API_KEY,
     event_id:orderData.event_id||'',
+    is_duplicate_phone_purchase:!!orderData.is_duplicate_phone_purchase,
     customer_name:orderData.name||'',
     phone:orderData.phone||'',
     city:orderData.city||'',
@@ -673,10 +693,16 @@ function finalizeOrder(useBeacon){
   if(orderFinalized)return;orderFinalized=true;
   if(upsellFallbackTimer)clearTimeout(upsellFallbackTimer);
   const payload=buildOrderPayload();
+  const phoneAlreadyPurchased=hasPhonePurchaseAlreadyFired(order.phone);
   console.log('SNAP HU ORDER',payload);
   sendOrderToSheet(payload,useBeacon);
-  sendOrderToCODCommandCenter({...order,event_id:payload.event_id});
-  firePurchase(payload);
+  sendOrderToCODCommandCenter({...order,event_id:payload.event_id,is_duplicate_phone_purchase:phoneAlreadyPurchased});
+  if(!phoneAlreadyPurchased){
+    firePurchase(payload);
+    markPhonePurchaseFired(order.phone,payload.event_id);
+  }else{
+    console.log('Duplicate phone purchase blocked from Meta:',order.phone);
+  }
 }
 function fireOrder(){finalizeOrder(false);upsellEl.classList.remove('show');thankyou.classList.add('show');}
 
