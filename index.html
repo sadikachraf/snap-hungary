@@ -441,7 +441,7 @@ else{window.addEventListener('load',function(){setTimeout(window.__loadMarketing
 // ── ORDER STATE ──
 let order={name:"",phone:"",street:"",city:"",zip:"",product:"TRIO Bundle",quantity:1,price:24990,upsell:false,upsellPrice:0,totalPrice:24990};
 const upsellEl=document.getElementById('upsell'),thankyou=document.getElementById('thankyou'),floatingNav=document.getElementById('floatingNav'),stickyCta=document.getElementById('stickyCta');
-let lastScrollY=window.scrollY,orderFinalized=false,purchaseEventFired=false,metaPurchaseEventFired=false,upsellFallbackTimer=null;
+let lastScrollY=window.scrollY,orderFinalized=false,orderSubmitted=false,purchaseEventFired=false,metaPurchaseEventFired=false,upsellFallbackTimer=null;
 
 // ── SCROLL HIDE/SHOW NAV ──
 window.addEventListener('scroll',()=>{
@@ -505,11 +505,19 @@ function getProductSku(product){
   const m={'Testo Booster':'PMLD-1748','Nitric Oxide':'PMLD-1742','Prosztata támogatás':'PMLD-1747','TRIO Bundle':'PMLD-TRIO-BUNDLE'};
   return m[product]||'PMLD-UNKNOWN';
 }
+function getOrCreatePurchaseEventId(){
+  if(!order.event_id){
+    order.event_id='purchase_'+Date.now()+'_'+Math.random().toString(36).slice(2);
+  }
+  return order.event_id;
+}
 function buildOrderPayload(){
   order.totalPrice=order.price+order.upsellPrice;
   order.quantity=order.upsell?2:1;
+  order.event_id=getOrCreatePurchaseEventId();
   return {
     sku:getProductSku(order.product),
+    event_id:order.event_id,
     price:order.totalPrice,
     customer_name:order.name,
     customer_phone:order.phone,
@@ -563,6 +571,7 @@ function buildCommandCenterPayload(orderData){
   const address=[orderData.street||'',orderData.zip||''].filter(Boolean).join(' ').trim();
   return {
     landing_page_api_key:COD_COMMAND_CENTER_API_KEY,
+    event_id:orderData.event_id||'',
     customer_name:orderData.name||'',
     phone:orderData.phone||'',
     city:orderData.city||'',
@@ -634,8 +643,31 @@ window.testCODCommandCenterSubmit=async function(){
   }
 };
 function firePurchase(payload){
-  if(!purchaseEventFired&&typeof ttq!=='undefined'){purchaseEventFired=true;ttq.track('Purchase',{content_type:'product',content_id:getProductSku(order.product),content_name:order.product,quantity:payload.quantity,value:Number(payload.price),currency:'HUF'});}
-  if(!metaPurchaseEventFired&&typeof fbq!=='undefined'){metaPurchaseEventFired=true;fbq('track','Purchase',{content_type:'product',content_ids:[getProductSku(order.product)],content_name:order.product,num_items:payload.quantity,value:Number(payload.price),currency:'HUF'});}
+  if(!purchaseEventFired&&typeof ttq!=='undefined'){
+    purchaseEventFired=true;
+    ttq.track('Purchase',{
+      content_type:'product',
+      content_id:getProductSku(order.product),
+      content_name:order.product,
+      quantity:payload.quantity,
+      value:Number(payload.price),
+      currency:'HUF'
+    });
+  }
+  if(!metaPurchaseEventFired&&typeof fbq!=='undefined'){
+    metaPurchaseEventFired=true;
+    console.log('Meta Purchase event_id:',payload.event_id);
+    fbq('track','Purchase',{
+      content_type:'product',
+      content_ids:[getProductSku(order.product)],
+      content_name:order.product,
+      num_items:payload.quantity,
+      value:Number(payload.price),
+      currency:'HUF'
+    },{
+      eventID:payload.event_id
+    });
+  }
 }
 function finalizeOrder(useBeacon){
   if(orderFinalized)return;orderFinalized=true;
@@ -643,7 +675,7 @@ function finalizeOrder(useBeacon){
   const payload=buildOrderPayload();
   console.log('SNAP HU ORDER',payload);
   sendOrderToSheet(payload,useBeacon);
-  sendOrderToCODCommandCenter(order);
+  sendOrderToCODCommandCenter({...order,event_id:payload.event_id});
   firePurchase(payload);
 }
 function fireOrder(){finalizeOrder(false);upsellEl.classList.remove('show');thankyou.classList.add('show');}
@@ -651,6 +683,10 @@ function fireOrder(){finalizeOrder(false);upsellEl.classList.remove('show');than
 // ── FORM SUBMIT ──
 document.getElementById('orderForm').addEventListener('submit',e=>{
   e.preventDefault();
+  if(orderSubmitted)return;
+  orderSubmitted=true;
+  const submitBtn=e.target.querySelector('button[type="submit"]');
+  if(submitBtn)submitBtn.disabled=true;
   const fd=new FormData(e.target);
   order.name=fd.get('name').trim();order.phone=fd.get('phone').trim();
   order.street=fd.get('street').trim();order.city=fd.get('city').trim();order.zip=fd.get('zip').trim();
