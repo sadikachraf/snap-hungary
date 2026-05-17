@@ -174,7 +174,7 @@ else{window.addEventListener('load',function(){setTimeout(window.__loadMarketing
         </div>
       </div>
       <div class="picker-options">
-        <label class="pick-opt" data-product="Prosztata támogatás" data-price="12990" data-img="images/prostate-front-1000px_1.png">
+        <label class="pick-opt" data-product="Prosztata támogatás" data-price="12990" data-img="images/prostate-front-1000px_1.webp">
           <input type="radio" name="pack" value="prostate">
           <div class="pick-inner">
             <img loading="lazy" decoding="async" class="pick-thumb" src="images/prostate-front-1000px_1.webp" alt="Prosztata támogatás">
@@ -182,7 +182,7 @@ else{window.addEventListener('load',function(){setTimeout(window.__loadMarketing
             <span class="pick-price">12 990 Ft</span>
           </div>
         </label>
-        <label class="pick-opt" data-product="Testo Booster" data-price="12990" data-img="images/product_image_90.png">
+        <label class="pick-opt" data-product="Testo Booster" data-price="12990" data-img="images/product_image_90.webp">
           <input type="radio" name="pack" value="testo">
           <div class="pick-inner">
             <img loading="lazy" decoding="async" class="pick-thumb" src="images/product_image_90.webp" alt="Testo Booster">
@@ -190,7 +190,7 @@ else{window.addEventListener('load',function(){setTimeout(window.__loadMarketing
             <span class="pick-price">12 990 Ft</span>
           </div>
         </label>
-        <label class="pick-opt" data-product="Nitric Oxide" data-price="12990" data-img="images/no2-60-front-1000px_1.png">
+        <label class="pick-opt" data-product="Nitric Oxide" data-price="12990" data-img="images/no2-60-front-1000px_1.webp">
           <input type="radio" name="pack" value="nitric">
           <div class="pick-inner">
             <img loading="lazy" decoding="async" class="pick-thumb" src="images/no2-60-front-1000px_1.webp" alt="Nitric Oxide">
@@ -198,7 +198,7 @@ else{window.addEventListener('load',function(){setTimeout(window.__loadMarketing
             <span class="pick-price">12 990 Ft</span>
           </div>
         </label>
-        <label class="pick-opt pick-bundle is-selected" data-product="TRIO Bundle" data-price="24990" data-img="images/Prostate_NO_Booster_Testo_90_1_e89b5453-0a41-4884-9c3c-1ebcb445b5a0.jpg">
+        <label class="pick-opt pick-bundle is-selected" data-product="TRIO Bundle" data-price="24990" data-img="images/Prostate_NO_Booster_Testo_90_1_e89b5453-0a41-4884-9c3c-1ebcb445b5a0.webp">
           <input type="radio" name="pack" value="trio" checked>
           <div class="pick-inner">
             <img loading="lazy" decoding="async" class="pick-thumb" src="images/Big_Boy_Bundle_-_Prostate_Testo_Nitric_Oxide_90ct_Main_Image_1.webp" alt="TRIO Bundle">
@@ -489,11 +489,15 @@ function updatePicker(opt){
   opt.classList.add('is-selected');
   const product=opt.dataset.product,price=Number(opt.dataset.price),img=opt.dataset.img;
   order.product=product;order.price=price;order.totalPrice=price;
-  if(pickerImg&&img){pickerImg.style.opacity='0';setTimeout(()=>{pickerImg.src=img;pickerImg.style.opacity='1'},180)}
+  const isTrio=product==='TRIO Bundle';
+  // Show/hide image panel and calculation card based on selection
+  const pickerImgWrap=pickerImg?pickerImg.closest('.picker-img-wrap'):null;
+  if(pickerImgWrap)pickerImgWrap.style.display=isTrio?'block':'none';
+  if(pickerImg&&img&&isTrio){pickerImg.style.opacity='0';setTimeout(()=>{pickerImg.src=img;pickerImg.style.opacity='1'},180)}
   if(selectedInline){
     selectedInline.textContent='📦 '+product+' — '+price.toLocaleString('hu-HU')+' Ft';
   }
-  if(pickerMath)pickerMath.style.display=product==='TRIO Bundle'?'block':'none';
+  if(pickerMath)pickerMath.style.display=isTrio?'block':'none';
 }
 pickerOpts.forEach(opt=>opt.addEventListener('click',()=>updatePicker(opt)));
 updatePicker(document.querySelector('.pick-bundle'));
