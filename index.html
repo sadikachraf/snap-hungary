@@ -106,14 +106,16 @@ else{window.addEventListener('load',function(){setTimeout(window.__loadMarketing
 </head>
 <body>
 <aside class="cod-test-banner" id="codTestBanner" aria-live="polite">
-  <h2>COD NEW BACKEND TEST MODE</h2>
+  <h2 id="codTestBannerTitle">COD NEW BACKEND TEST MODE</h2>
   <div class="cod-test-banner-grid">
     <div><b>BUILD:</b> <span id="codTestBuild"></span></div>
-    <div><b>BACKEND:</b> NEW APPS SCRIPT ONLY</div>
+    <div><b>BACKEND:</b> NEW GOOGLE SHEET</div>
     <div class="cod-test-endpoint"><b>ENDPOINT:</b> <span id="codTestEndpoint"></span></div>
+    <div><b>OLD SHEET:</b> DISABLED</div>
+    <div><b>COD COMMAND CENTER:</b> DISABLED</div>
     <div><b>SMS:</b> DISABLED</div>
-    <div><b>LEGACY BACKENDS:</b> DISABLED</div>
     <div><b>PIXELS:</b> DISABLED</div>
+    <div><b>ARMED:</b> <span id="codTestArmed"></span></div>
   </div>
 </aside>
 <nav class="nav" id="floatingNav"><img decoding="async" src="images/snap-logo-no-r.webp" alt="SNAP"></nav>
@@ -548,24 +550,39 @@ updatePicker(document.querySelector('.pick-bundle'));
 // Production remains on the legacy path unless an explicit preview/test URL opts in.
 const backendParams=new URLSearchParams(window.location.search);
 const orderBackendMode=backendParams.get('cod_backend')==='new-test'?'new-test':'legacy';
-const COD_TEST_BUILD_ID='MANUAL-20260809-B02';
-const COD_TEST_BUILD_LABEL='codex/new-cod-backend-test • MANUAL-20260809-B02';
+const COD_TEST_BUILD_ID='ONLINE-B02';
+const COD_TEST_DIAGNOSTIC_MARKER='MANUAL-20260809-B02';
+const COD_TEST_ALLOWED_ENDPOINT='https://script.google.com/macros/s/AKfycbz7JiGJYf249KApzoqzoEq3fLgO90q0NQ0h2aLXzHlTME_gJY3aLDGyZ1FqtbJ0ljtEMg/exec';
 const requestedTestBuild=backendParams.get('test_build')||'';
 function getNewCodTestEndpoint(){
   const candidate=backendParams.get('cod_endpoint')||'';
   if(!candidate)return '';
   try{
     const url=new URL(candidate);
-    return url.protocol==='https:'&&url.hostname==='script.google.com'&&/^\/macros\/s\/[^/]+\/exec$/.test(url.pathname)?url.href:'';
+    const isAllowed=url.protocol==='https:'&&
+      url.hostname==='script.google.com'&&
+      url.pathname.endsWith('/exec')&&
+      !url.search&&
+      !url.hash&&
+      url.href===COD_TEST_ALLOWED_ENDPOINT;
+    return isAllowed?url.href:'';
   }catch(error){return ''}
 }
 const NEW_COD_TEST_ENDPOINT=getNewCodTestEndpoint();
+const NEW_COD_TEST_ARMED=orderBackendMode==='new-test'&&
+  NEW_COD_TEST_ENDPOINT===COD_TEST_ALLOWED_ENDPOINT&&
+  requestedTestBuild===COD_TEST_BUILD_ID;
 const LEGACY_SHEET_WEBHOOK_URL='https://script.google.com/macros/s/AKfycbwfJJQ_HJpJp5j7jM5Pri9MlsPxdwNa2qaeteKTINJLMIpTs94cjix1e-eVIZCRIpHerg/exec';
 if(orderBackendMode==='new-test'){
   document.body.classList.add('cod-test-mode');
   document.getElementById('codTestBanner').classList.add('show');
-  document.getElementById('codTestBuild').textContent=COD_TEST_BUILD_LABEL;
+  document.getElementById('codTestBuild').textContent=COD_TEST_BUILD_ID;
   document.getElementById('codTestEndpoint').textContent=NEW_COD_TEST_ENDPOINT||'(INVALID OR MISSING ENDPOINT)';
+  document.getElementById('codTestArmed').textContent=NEW_COD_TEST_ARMED?'YES':'NO — NEW BACKEND TEST NOT ARMED';
+  if(!NEW_COD_TEST_ARMED){
+    document.getElementById('codTestBannerTitle').textContent='NEW BACKEND TEST NOT ARMED';
+    document.querySelector('#orderForm button[type="submit"]').disabled=true;
+  }
   document.title='[COD TEST '+COD_TEST_BUILD_ID+'] '+document.title;
   const noCacheMeta=document.createElement('meta');
   noCacheMeta.httpEquiv='Cache-Control';
@@ -648,7 +665,7 @@ function buildNewCodBackendPayload(){
   const utm=getUtmParams();
   return {
     action:'create_order',
-    test_marker:COD_TEST_BUILD_ID,
+    test_marker:COD_TEST_DIAGNOSTIC_MARKER,
     customer_name:order.name,
     phone:order.phone,
     email:order.email,
@@ -664,7 +681,7 @@ function buildNewCodBackendPayload(){
   };
 }
 function sendOrderToNewCodBackend(useBeacon){
-  if(!NEW_COD_TEST_ENDPOINT)throw new Error('Missing or invalid cod_endpoint for new-test mode.');
+  if(!NEW_COD_TEST_ARMED)throw new Error('NEW BACKEND TEST NOT ARMED.');
   const testPayload=buildNewCodBackendPayload();
   console.info('NEW TEST BACKEND SUBMISSION ENTERED',{
     resolved_endpoint:NEW_COD_TEST_ENDPOINT,
@@ -866,6 +883,7 @@ function firePurchase(payload){
   }
 }
 function finalizeOrder(useBeacon){
+  if(orderBackendMode==='new-test'&&!NEW_COD_TEST_ARMED)throw new Error('NEW BACKEND TEST NOT ARMED.');
   if(orderFinalized)return;orderFinalized=true;
   if(upsellFallbackTimer)clearTimeout(upsellFallbackTimer);
   const payload=buildOrderPayload();
@@ -908,7 +926,7 @@ document.getElementById('orderForm').addEventListener('submit',e=>{
   e.preventDefault();
   if(orderSubmitted)return;
   const submitBtn=e.target.querySelector('button[type="submit"]');
-  if(orderBackendMode==='new-test'&&(!NEW_COD_TEST_ENDPOINT||requestedTestBuild!==COD_TEST_BUILD_ID)){
+  if(orderBackendMode==='new-test'&&!NEW_COD_TEST_ARMED){
     alert('A teszt build vagy végpont hiányzik/érvénytelen. A rendelést nem küldtük el. Elvárt build: '+COD_TEST_BUILD_ID);
     return;
   }
@@ -929,7 +947,7 @@ document.getElementById('codTestSend').onclick=()=>{
   if(orderBackendMode!=='new-test')return;
   const button=document.getElementById('codTestSend');
   const status=document.getElementById('codTestStatus');
-  if(!NEW_COD_TEST_ENDPOINT||requestedTestBuild!==COD_TEST_BUILD_ID){
+  if(!NEW_COD_TEST_ARMED){
     status.className='cod-test-status error';
     status.textContent='Blocked: invalid endpoint or build marker. Nothing was sent.';
     return;

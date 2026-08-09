@@ -4,7 +4,7 @@ This branch preserves the production `main` behavior by default. The new Apps Sc
 
 - `cod_backend=new-test`
 - `cod_endpoint=<URL-encoded Apps Script /exec URL>`
-- `test_build=MANUAL-20260809-B02`
+- `test_build=ONLINE-B02`
 
 In `new-test` mode:
 
@@ -29,7 +29,7 @@ for that branch. Do not promote the preview or merge the branch into `main`.
 Open the preview with the current `/exec` endpoint and exact build marker:
 
 ```text
-https://VERCEL_PREVIEW_URL/?cod_backend=new-test&cod_endpoint=URL_ENCODED_APPS_SCRIPT_EXEC_URL&utm_source=cod_migration_test&utm_campaign=phase1_online_preview&utm_content=manual_online&test_build=MANUAL-20260809-B02
+https://VERCEL_PREVIEW_URL/?cod_backend=new-test&cod_endpoint=URL_ENCODED_APPS_SCRIPT_EXEC_URL&utm_source=cod_migration_test&utm_campaign=phase1_online_preview&utm_content=manual_online&test_build=ONLINE-B02
 ```
 
 The Apps Script project must first have `configurePhase1Test()` run manually, be deployed as a Web App executing as the owner with access set to Anyone, and have its production `/exec` URL saved as the `WEB_APP_URL` Script Property.
