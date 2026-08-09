@@ -46,6 +46,9 @@ footer{background:#082a77;color:#fff;padding:54px 0 70px}.footer-logo img{height
 .sticky-cta{position:fixed;z-index:80;left:0;right:0;bottom:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:rgba(255,255,255,.94);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-top:1px solid rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center;gap:12px;transform:translateY(120%);transition:.25s ease}.sticky-cta.show{transform:translateY(0)}.sticky-cta .btn{flex:1;max-width:520px;min-height:56px;font-size:17px}.sticky-cta img{width:82px;height:52px;object-fit:contain;border-radius:12px}
 /* MODALS */
 .upsell,.thankyou,.ing-modal{position:fixed;inset:0;z-index:120;background:rgba(0,0,0,.60);display:none;align-items:center;justify-content:center;padding:22px}.upsell.show,.thankyou.show,.ing-modal.show{display:flex}.upsell-box,.thank-card{background:#fff;border-radius:28px;width:min(560px,100%);max-height:92vh;overflow:auto;padding:24px;box-shadow:0 30px 80px rgba(0,0,0,.25)}.upsell{background:#101828}.upsell-box{text-align:center;background:#fffdf8}.upsell-offer{border:2px solid #ff6424;background:#fff;border-radius:24px;padding:18px}.upsell-offer img{height:150px;object-fit:contain;margin:auto}.upsell-old{text-decoration:line-through;color:#98a2b3;font-weight:900;font-size:24px}.upsell-new{display:block;font-size:52px;font-weight:900;color:#d92d20}.no-link{display:block;color:#667085;text-decoration:underline;font-weight:800;font-size:13px;margin-top:14px;cursor:pointer}.thankyou{text-align:center;background:rgba(8,42,119,.78)}
+.cod-test-banner{display:none;position:sticky;top:0;z-index:300;background:#fff3cd;border-bottom:5px solid #d92d20;color:#351300;padding:14px 18px;box-shadow:0 10px 28px rgba(0,0,0,.24)}.cod-test-banner.show{display:block}.cod-test-banner h2{margin:0 0 10px;font-size:22px;letter-spacing:.02em;color:#b42318}.cod-test-banner-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 22px;font-size:13px;line-height:1.4}.cod-test-banner-grid b{color:#7a271a}.cod-test-endpoint{overflow-wrap:anywhere}.cod-test-mode .nav{display:none}.cod-test-mode .hero{padding-top:0}.cod-test-mode .hero:before,.cod-test-mode .hero-bg{inset:0}
+.cod-test-email-field{display:none}.cod-test-mode .cod-test-email-field{display:block}
+.cod-test-review{position:fixed;inset:0;z-index:310;background:rgba(5,15,40,.88);display:none;align-items:center;justify-content:center;padding:18px}.cod-test-review.show{display:flex}.cod-test-card{width:min(680px,100%);max-height:94vh;overflow:auto;background:#fff;border:5px solid #f04438;border-radius:24px;padding:24px;box-shadow:0 34px 90px rgba(0,0,0,.4)}.cod-test-card h2{font-size:28px;margin:0 0 6px;color:#b42318}.cod-test-card-intro{margin:0 0 18px;color:#475467;font-weight:700}.cod-test-summary{display:grid;grid-template-columns:180px 1fr;border:1px solid #d0d5dd;border-radius:14px;overflow:hidden;margin-bottom:16px}.cod-test-summary dt,.cod-test-summary dd{margin:0;padding:10px 12px;border-bottom:1px solid #eaecf0}.cod-test-summary dt{background:#f2f4f7;font-weight:900}.cod-test-summary dd{font-weight:700;overflow-wrap:anywhere}.cod-test-summary dt:last-of-type,.cod-test-summary dd:last-of-type{border-bottom:0}.cod-test-status{min-height:46px;border-radius:12px;background:#eff8ff;color:#1849a9;padding:12px 14px;margin:12px 0;font-weight:800}.cod-test-status.error{background:#fef3f2;color:#b42318}.cod-test-send{width:100%;min-height:60px;border:0;border-radius:14px;background:#067647;color:#fff;font-size:18px;font-weight:900;cursor:pointer}.cod-test-send:disabled{opacity:.55;cursor:wait}
 /* ING MODAL */
 .ing-modal{z-index:130}.ing-box{width:min(680px,calc(100% - 28px));max-height:88vh;background:#fff;border-radius:34px;overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:0 34px 90px rgba(0,0,0,.28)}.ing-tabs{display:flex;justify-content:center;align-items:center;gap:14px;padding:26px 64px 22px;border-bottom:1px solid #ececec;background:#fff;flex-shrink:0}.ing-tab{width:88px;height:88px;border-radius:50%;border:2.5px solid #d0d5dd;background:#fff;display:grid;place-items:center;padding:10px;cursor:pointer;transition:.2s ease}.ing-tab.active{border-color:#082a77;border-width:3px;background:#f0f4ff}.ing-tab img{width:64px;height:64px;object-fit:contain;border-radius:50%}.ing-arrow{position:absolute;top:52px;width:40px;height:40px;border-radius:50%;border:0;background:#e8f0e2;color:#3a5a30;font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:4;font-weight:700;transition:.15s}.ing-arrow:hover{background:#d2e8c6}.ing-arrow.prev{left:16px}.ing-arrow.next{right:16px}.ing-panel{display:none;padding:22px 28px 70px;overflow-y:auto;flex:1}.ing-panel.active{display:flex;flex-direction:column;gap:0}.ing-modal-item{display:grid;grid-template-columns:80px 1fr;gap:18px;align-items:center;padding:16px 0;border-bottom:1px solid #f0f0f0}.ing-modal-item:last-child{border-bottom:none}.ing-modal-item img{width:76px;height:76px;border-radius:50%;object-fit:cover;background:#e8eef8}.ing-modal-item h3{font-size:17px;margin:0 0 4px;color:#10245d;font-weight:900}.ing-modal-item p{font-size:14px;line-height:1.45;color:#667085;margin:0}.ing-modal-item b{color:#10245d;font-weight:800}.ing-close{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);z-index:5;border:0;background:#f0f0f0;border-radius:50%;width:48px;height:48px;font-size:26px;color:#333;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.15)}
 .fade{opacity:0;transform:translateY(16px);transition:.65s ease}.fade.in{opacity:1;transform:none}
@@ -68,6 +71,7 @@ footer{background:#082a77;color:#fff;padding:54px 0 70px}.footer-logo img{height
   .review-shell{margin-left:-16px;margin-right:-16px}.review-track{padding:8px 20px 18px;gap:12px}.review-card{flex:0 0 calc(100vw - 68px);border-radius:22px;padding:16px}.review-card p{font-size:14px}
   .sticky-cta{padding:10px 14px calc(10px + env(safe-area-inset-bottom));gap:10px}.sticky-cta .btn{min-height:54px;font-size:15px}
   .footer-logo img{height:44px}.upsell-new{font-size:38px}
+  .cod-test-banner{position:relative;padding:12px 14px}.cod-test-banner-grid{grid-template-columns:1fr;font-size:12px;gap:5px}.cod-test-card{padding:18px 15px;border-width:4px}.cod-test-card h2{font-size:23px}.cod-test-summary{grid-template-columns:120px 1fr;font-size:12px}.cod-test-summary dt,.cod-test-summary dd{padding:9px 8px}
   .ing-box{width:calc(100% - 28px);border-radius:28px;max-height:84vh}.ing-tabs{position:sticky;top:0;z-index:3;background:#fff;border-radius:28px 28px 0 0;padding:22px 52px 18px;gap:10px}.ing-tab{width:76px;height:76px}.ing-tab img{width:56px;height:56px}.ing-modal-item{grid-template-columns:72px 1fr;gap:14px}.ing-modal-item img{width:68px;height:68px}.ing-modal-item h3{font-size:16px}.ing-modal-item p{font-size:13px;line-height:1.4}.ing-panel{padding:18px 20px 64px}.ing-arrow{top:46px}.ing-arrow.prev{left:10px}.ing-arrow.next{right:10px}.ing-close{bottom:14px;width:44px;height:44px;font-size:22px}
 }
 @media(max-width:390px){.hero h1{font-size:29px}.cmp-card{flex-basis:calc(100vw - 48px)}.sticky-cta .btn{font-size:14px}}
@@ -76,6 +80,7 @@ footer{background:#082a77;color:#fff;padding:54px 0 70px}.footer-logo img{height
 <!-- Marketing pixels: delayed slightly to improve first paint -->
 <script>
 window.__loadMarketingPixels=function(){
+  if(new URLSearchParams(window.location.search).get('cod_backend')==='new-test')return;
   if(window.__pixelsLoaded)return;window.__pixelsLoaded=true;
   !function (w, d, t) {
     w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];
@@ -100,6 +105,17 @@ else{window.addEventListener('load',function(){setTimeout(window.__loadMarketing
 </script>
 </head>
 <body>
+<aside class="cod-test-banner" id="codTestBanner" aria-live="polite">
+  <h2>COD NEW BACKEND TEST MODE</h2>
+  <div class="cod-test-banner-grid">
+    <div><b>BUILD:</b> <span id="codTestBuild"></span></div>
+    <div><b>BACKEND:</b> NEW APPS SCRIPT ONLY</div>
+    <div class="cod-test-endpoint"><b>ENDPOINT:</b> <span id="codTestEndpoint"></span></div>
+    <div><b>SMS:</b> DISABLED</div>
+    <div><b>LEGACY BACKENDS:</b> DISABLED</div>
+    <div><b>PIXELS:</b> DISABLED</div>
+  </div>
+</aside>
 <nav class="nav" id="floatingNav"><img decoding="async" src="images/snap-logo-no-r.webp" alt="SNAP"></nav>
 
 <header class="hero">
@@ -236,6 +252,7 @@ else{window.addEventListener('load',function(){setTimeout(window.__loadMarketing
       <form class="form" id="orderForm">
         <div class="field"><label>Teljes név</label><input name="name" required autocomplete="name" placeholder="Pl.: Kovács Péter"></div>
         <div class="field"><label>Telefonszám</label><input name="phone" required inputmode="tel" autocomplete="tel" placeholder="Pl.: 06 30 123 4567"></div>
+        <div class="field cod-test-email-field"><label>E-mail-cím (nem kötelező)</label><input name="email" type="email" autocomplete="email" maxlength="254" placeholder="Pl.: nev@pelda.hu"></div>
         <div class="field"><label>Utca és házszám</label><input name="street" required autocomplete="street-address" placeholder="Pl.: Kossuth Lajos utca 12"></div>
         <div class="field"><label>Város</label><input name="city" required autocomplete="address-level2" placeholder="Pl.: Budapest"></div>
         <div class="field"><label>Irányítószám</label><input name="zip" required inputmode="numeric" autocomplete="postal-code" placeholder="Pl.: 1051"></div>
@@ -407,6 +424,29 @@ else{window.addEventListener('load',function(){setTimeout(window.__loadMarketing
   </div>
 </div>
 
+<!-- NEW BACKEND MANUAL TEST REVIEW -->
+<div class="cod-test-review" id="codTestReview" role="dialog" aria-modal="true" aria-labelledby="codTestReviewTitle">
+  <div class="cod-test-card">
+    <h2 id="codTestReviewTitle">MANUAL PRE-SUBMIT CHECK</h2>
+    <p class="cod-test-card-intro">Nothing has been sent. Verify these values, then use the single green button.</p>
+    <dl class="cod-test-summary">
+      <dt>Offer ID</dt><dd id="codReviewOfferId"></dd>
+      <dt>Product</dt><dd id="codReviewProduct"></dd>
+      <dt>Quantity</dt><dd id="codReviewQuantity"></dd>
+      <dt>Total HUF</dt><dd id="codReviewTotal"></dd>
+      <dt>Endpoint</dt><dd id="codReviewEndpoint"></dd>
+      <dt>Test mode</dt><dd id="codReviewMode"></dd>
+      <dt>Name</dt><dd id="codReviewName"></dd>
+      <dt>Phone</dt><dd id="codReviewPhone"></dd>
+      <dt>Email</dt><dd id="codReviewEmail"></dd>
+      <dt>Address</dt><dd id="codReviewAddress"></dd>
+      <dt>ZIP / City</dt><dd id="codReviewLocation"></dd>
+    </dl>
+    <div class="cod-test-status" id="codTestStatus">Ready. No request has been sent.</div>
+    <button class="cod-test-send" id="codTestSend" type="button">SEND TO NEW GOOGLE SHEET</button>
+  </div>
+</div>
+
 <!-- INGREDIENTS MODAL -->
 <div class="ing-modal" id="ingModal">
   <div class="ing-box">
@@ -441,7 +481,7 @@ else{window.addEventListener('load',function(){setTimeout(window.__loadMarketing
 
 <script>
 // ── ORDER STATE ──
-let order={name:"",phone:"",street:"",city:"",zip:"",product:"TRIO Bundle",quantity:1,price:24990,upsell:false,upsellPrice:0,totalPrice:24990};
+let order={name:"",phone:"",email:"",street:"",city:"",zip:"",product:"TRIO Bundle",quantity:1,price:24990,upsell:false,upsellPrice:0,totalPrice:24990};
 const upsellEl=document.getElementById('upsell'),thankyou=document.getElementById('thankyou'),floatingNav=document.getElementById('floatingNav'),stickyCta=document.getElementById('stickyCta');
 let lastScrollY=window.scrollY,orderFinalized=false,orderSubmitted=false,purchaseEventFired=false,metaPurchaseEventFired=false,upsellFallbackTimer=null;
 
@@ -504,8 +544,35 @@ function updatePicker(opt){
 pickerOpts.forEach(opt=>opt.addEventListener('click',()=>updatePicker(opt)));
 updatePicker(document.querySelector('.pick-bundle'));
 
-// ── WEBHOOK ──
-const WEBHOOK_URL='https://script.google.com/macros/s/AKfycbwfJJQ_HJpJp5j7jM5Pri9MlsPxdwNa2qaeteKTINJLMIpTs94cjix1e-eVIZCRIpHerg/exec';
+// ── ORDER BACKENDS ──
+// Production remains on the legacy path unless an explicit preview/test URL opts in.
+const backendParams=new URLSearchParams(window.location.search);
+const orderBackendMode=backendParams.get('cod_backend')==='new-test'?'new-test':'legacy';
+const COD_TEST_BUILD_ID='MANUAL-20260809-B02';
+const COD_TEST_BUILD_LABEL='codex/new-cod-backend-test • MANUAL-20260809-B02';
+const requestedTestBuild=backendParams.get('test_build')||'';
+function getNewCodTestEndpoint(){
+  const candidate=backendParams.get('cod_endpoint')||'';
+  if(!candidate)return '';
+  try{
+    const url=new URL(candidate);
+    return url.protocol==='https:'&&url.hostname==='script.google.com'&&/^\/macros\/s\/[^/]+\/exec$/.test(url.pathname)?url.href:'';
+  }catch(error){return ''}
+}
+const NEW_COD_TEST_ENDPOINT=getNewCodTestEndpoint();
+const LEGACY_SHEET_WEBHOOK_URL='https://script.google.com/macros/s/AKfycbwfJJQ_HJpJp5j7jM5Pri9MlsPxdwNa2qaeteKTINJLMIpTs94cjix1e-eVIZCRIpHerg/exec';
+if(orderBackendMode==='new-test'){
+  document.body.classList.add('cod-test-mode');
+  document.getElementById('codTestBanner').classList.add('show');
+  document.getElementById('codTestBuild').textContent=COD_TEST_BUILD_LABEL;
+  document.getElementById('codTestEndpoint').textContent=NEW_COD_TEST_ENDPOINT||'(INVALID OR MISSING ENDPOINT)';
+  document.title='[COD TEST '+COD_TEST_BUILD_ID+'] '+document.title;
+  const noCacheMeta=document.createElement('meta');
+  noCacheMeta.httpEquiv='Cache-Control';
+  noCacheMeta.content='no-store, no-cache, must-revalidate, max-age=0';
+  document.head.appendChild(noCacheMeta);
+  console.info('NEW TEST MODE ACTIVE',{resolved_endpoint:NEW_COD_TEST_ENDPOINT||'(invalid)'});
+}
 
 function getProductSku(product){
   const m={'Testo Booster':'PMLD-1748','Nitric Oxide':'PMLD-1742','Prosztata támogatás':'PMLD-1747','TRIO Bundle':'PMLD-TRIO-BUNDLE'};
@@ -555,22 +622,125 @@ function buildOrderPayload(){
     date:new Date().toISOString()
   };
 }
-function sendOrderToSheet(payload,useBeacon){
+function sendOrderToLegacySheet(payload,useBeacon){
   const body=JSON.stringify(payload);
   if(useBeacon&&navigator.sendBeacon){
     try{
-      navigator.sendBeacon(WEBHOOK_URL,new Blob([body],{type:'text/plain;charset=utf-8'}));
+      navigator.sendBeacon(LEGACY_SHEET_WEBHOOK_URL,new Blob([body],{type:'text/plain;charset=utf-8'}));
       return;
     }catch(e){}
   }
 
   // Google Apps Script accepts text/plain JSON reliably from static landing pages.
-  fetch(WEBHOOK_URL,{
+  fetch(LEGACY_SHEET_WEBHOOK_URL,{
     method:'POST',
     mode:'no-cors',
     headers:{'Content-Type':'text/plain;charset=utf-8'},
     body:body
   }).catch(e=>console.error('Sheet error:',e));
+}
+function getNewBackendOfferId(){
+  const baseSku=getProductSku(order.product);
+  if(!order.upsell)return baseSku;
+  return order.product==='TRIO Bundle'?'PMLD-TRIO-BUNDLE-2':baseSku+'-PLUS-TRIO';
+}
+function buildNewCodBackendPayload(){
+  const utm=getUtmParams();
+  return {
+    action:'create_order',
+    test_marker:COD_TEST_BUILD_ID,
+    customer_name:order.name,
+    phone:order.phone,
+    email:order.email,
+    address:order.street,
+    zip:order.zip,
+    city:order.city,
+    product:getNewBackendOfferId(),
+    quantity:String(order.quantity),
+    total_huf:String(order.totalPrice),
+    utm_source:utm.utm_source,
+    utm_campaign:utm.utm_campaign,
+    utm_content:utm.utm_content
+  };
+}
+function sendOrderToNewCodBackend(useBeacon){
+  if(!NEW_COD_TEST_ENDPOINT)throw new Error('Missing or invalid cod_endpoint for new-test mode.');
+  const testPayload=buildNewCodBackendPayload();
+  console.info('NEW TEST BACKEND SUBMISSION ENTERED',{
+    resolved_endpoint:NEW_COD_TEST_ENDPOINT,
+    selected_offer_id:testPayload.product,
+    quantity:testPayload.quantity,
+    expected_price:testPayload.total_huf,
+    customer_fields_present:{
+      customer_name:!!testPayload.customer_name,
+      phone:!!testPayload.phone,
+      email:!!testPayload.email,
+      address:!!testPayload.address,
+      zip:!!testPayload.zip,
+      city:!!testPayload.city
+    }
+  });
+  const body=new URLSearchParams(testPayload);
+  if(useBeacon&&navigator.sendBeacon){
+    try{
+      navigator.sendBeacon(NEW_COD_TEST_ENDPOINT,body);
+      return;
+    }catch(error){}
+  }
+  // In isolated migration tests, use a browser-native form POST so Google Apps
+  // Script can display its real success or validation page. A no-cors fetch has
+  // an opaque response and can make a failed request look successful.
+  const form=document.createElement('form');
+  form.method='POST';
+  form.action=NEW_COD_TEST_ENDPOINT;
+  form.target='_top';
+  form.style.display='none';
+  body.forEach((value,key)=>{
+    const input=document.createElement('input');
+    input.type='hidden';
+    input.name=key;
+    input.value=value;
+    form.appendChild(input);
+  });
+  document.body.appendChild(form);
+  console.info('NEW TEST NATIVE FORM.SUBMIT INVOKED',{
+    method:form.method.toUpperCase(),
+    target:form.getAttribute('target')||'_self',
+    action:form.getAttribute('action'),
+    field_names:[...form.elements].map(element=>element.name)
+  });
+  form.submit();
+}
+function maskManualTestValue(value,visibleStart,visibleEnd){
+  const text=String(value||'').trim();
+  if(!text)return '(empty)';
+  if(text.length<=visibleStart+visibleEnd)return '•'.repeat(text.length);
+  return text.slice(0,visibleStart)+'•'.repeat(Math.min(8,text.length-visibleStart-visibleEnd))+text.slice(text.length-visibleEnd);
+}
+function maskManualTestEmail(value){
+  const email=String(value||'').trim();
+  const at=email.indexOf('@');
+  if(at<=0)return email?'••••':'(empty)';
+  return email.charAt(0)+'•••'+email.slice(at);
+}
+function showNewCodManualReview(){
+  order.totalPrice=order.price+order.upsellPrice;
+  order.quantity=order.upsell?2:1;
+  document.getElementById('codReviewOfferId').textContent=getNewBackendOfferId();
+  document.getElementById('codReviewProduct').textContent=order.product;
+  document.getElementById('codReviewQuantity').textContent=String(order.quantity);
+  document.getElementById('codReviewTotal').textContent=String(order.totalPrice);
+  document.getElementById('codReviewEndpoint').textContent=NEW_COD_TEST_ENDPOINT;
+  document.getElementById('codReviewMode').textContent='true';
+  document.getElementById('codReviewName').textContent=maskManualTestValue(order.name,1,1);
+  document.getElementById('codReviewPhone').textContent=maskManualTestValue(order.phone,0,4);
+  document.getElementById('codReviewEmail').textContent=maskManualTestEmail(order.email);
+  document.getElementById('codReviewAddress').textContent=maskManualTestValue(order.street,1,2);
+  document.getElementById('codReviewLocation').textContent=order.zip+' / '+order.city;
+  document.getElementById('codTestStatus').className='cod-test-status';
+  document.getElementById('codTestStatus').textContent='Ready. No request has been sent.';
+  document.getElementById('codTestReview').classList.add('show');
+  document.body.style.overflow='hidden';
 }
 const COD_COMMAND_CENTER_URL='https://cod-command-center-three.vercel.app/api/orders';
 const COD_COMMAND_CENTER_API_KEY='0f2c08d4-2741-4098-b9ff-7cfb202df6c6';
@@ -700,8 +870,19 @@ function finalizeOrder(useBeacon){
   if(upsellFallbackTimer)clearTimeout(upsellFallbackTimer);
   const payload=buildOrderPayload();
   const phoneAlreadyPurchased=hasPhonePurchaseAlreadyFired(order.phone);
+  if(orderBackendMode==='new-test'){
+    console.info('NEW TEST FINALIZE ORDER',{
+      selected_offer_id:getNewBackendOfferId(),
+      quantity:order.quantity,
+      expected_price:order.totalPrice,
+      upsell:order.upsell?'accepted':'declined'
+    });
+    sendOrderToNewCodBackend(useBeacon);
+    console.log('New COD test mode: legacy order writes and Purchase pixels were skipped.');
+    return;
+  }
   console.log('SNAP HU ORDER',payload);
-  sendOrderToSheet(payload,useBeacon);
+  sendOrderToLegacySheet(payload,useBeacon);
   sendOrderToCODCommandCenter({...order,event_id:payload.event_id,is_duplicate_phone_purchase:phoneAlreadyPurchased});
   if(!phoneAlreadyPurchased){
     firePurchase(payload);
@@ -710,17 +891,32 @@ function finalizeOrder(useBeacon){
     console.log('Duplicate phone purchase blocked from Meta:',order.phone);
   }
 }
-function fireOrder(){finalizeOrder(false);upsellEl.classList.remove('show');thankyou.classList.add('show');}
+function fireOrder(){
+  if(orderBackendMode==='new-test'){
+    if(upsellFallbackTimer)clearTimeout(upsellFallbackTimer);
+    upsellEl.classList.remove('show');
+    showNewCodManualReview();
+    return;
+  }
+  finalizeOrder(false);
+  upsellEl.classList.remove('show');
+  thankyou.classList.add('show');
+}
 
 // ── FORM SUBMIT ──
 document.getElementById('orderForm').addEventListener('submit',e=>{
   e.preventDefault();
   if(orderSubmitted)return;
-  orderSubmitted=true;
   const submitBtn=e.target.querySelector('button[type="submit"]');
+  if(orderBackendMode==='new-test'&&(!NEW_COD_TEST_ENDPOINT||requestedTestBuild!==COD_TEST_BUILD_ID)){
+    alert('A teszt build vagy végpont hiányzik/érvénytelen. A rendelést nem küldtük el. Elvárt build: '+COD_TEST_BUILD_ID);
+    return;
+  }
+  orderSubmitted=true;
   if(submitBtn)submitBtn.disabled=true;
   const fd=new FormData(e.target);
   order.name=fd.get('name').trim();order.phone=fd.get('phone').trim();
+  order.email=(fd.get('email')||'').trim();
   order.street=fd.get('street').trim();order.city=fd.get('city').trim();order.zip=fd.get('zip').trim();
   order.upsell=false;order.upsellPrice=0;
   upsellEl.classList.add('show');
@@ -729,7 +925,40 @@ document.getElementById('orderForm').addEventListener('submit',e=>{
 });
 document.getElementById('yesUpsell').onclick=()=>{order.upsell=true;order.upsellPrice=12990;fireOrder()};
 document.getElementById('noUpsell').onclick=()=>{order.upsell=false;order.upsellPrice=0;fireOrder()};
-window.addEventListener('pagehide',()=>{if(!orderFinalized&&upsellEl.classList.contains('show')){order.upsell=false;order.upsellPrice=0;finalizeOrder(true);}});
+document.getElementById('codTestSend').onclick=()=>{
+  if(orderBackendMode!=='new-test')return;
+  const button=document.getElementById('codTestSend');
+  const status=document.getElementById('codTestStatus');
+  if(!NEW_COD_TEST_ENDPOINT||requestedTestBuild!==COD_TEST_BUILD_ID){
+    status.className='cod-test-status error';
+    status.textContent='Blocked: invalid endpoint or build marker. Nothing was sent.';
+    return;
+  }
+  button.disabled=true;
+  status.className='cod-test-status';
+  status.textContent='Submitting native POST to the standalone Apps Script… wait for the real Apps Script result page.';
+  try{
+    finalizeOrder(false);
+    setTimeout(()=>{
+      status.className='cod-test-status error';
+      status.textContent='The browser did not navigate to the Apps Script result page. Reload this preview and retry once.';
+      button.disabled=false;
+      orderFinalized=false;
+    },15000);
+  }catch(error){
+    console.error('NEW TEST SUBMISSION ERROR',error);
+    status.className='cod-test-status error';
+    status.textContent='Preview submission could not start: '+(error&&error.message?error.message:'unknown error');
+    button.disabled=false;
+    orderFinalized=false;
+  }
+};
+window.addEventListener('pagehide',()=>{
+  if(orderBackendMode==='new-test')return;
+  if(!orderFinalized&&upsellEl.classList.contains('show')){
+    order.upsell=false;order.upsellPrice=0;finalizeOrder(true);
+  }
+});
 
 // ── INGREDIENTS MODAL ──
 const ingModal=document.getElementById('ingModal'),tabs=[...document.querySelectorAll('.ing-tab')],panels=[...document.querySelectorAll('.ing-panel')];
