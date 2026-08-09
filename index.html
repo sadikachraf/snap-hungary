@@ -192,7 +192,7 @@ else{window.addEventListener('load',function(){setTimeout(window.__loadMarketing
         </div>
       </div>
       <div class="picker-options">
-        <label class="pick-opt" data-product="Prosztata támogatás" data-price="12990" data-img="images/prostate-front-1000px_1.webp">
+        <label class="pick-opt" data-product="Éjszakai Regeneráció" data-price="12990" data-img="images/prostate-front-1000px_1.webp">
           <input type="radio" name="pack" value="prostate">
           <div class="pick-inner">
             <img loading="lazy" decoding="async" class="pick-thumb" src="images/prostate-front-1000px_1.webp" alt="Éjszakai Regeneráció">
@@ -403,13 +403,13 @@ else{window.addEventListener('load',function(){setTimeout(window.__loadMarketing
     <p class="lead">A legtöbb férfi nem csak 1 rövid körre veszi a TRIÓT. Ha komolyan szeretnéd támogatni az energiád, alvásod és férfi vitalitásod, érdemes megszakítás nélkül folytatni.</p>
     <div class="upsell-offer">
       <img loading="lazy" decoding="async" src="images/Big_Boy_Bundle_-_Prostate_Testo_Nitric_Oxide_90ct_Main_Image_1.webp">
-      <h3>Adj hozzá még 1 teljes TRIO csomagot most — majdnem féláron</h3>
+      <h3 id="upsellTitle">Adj hozzá még 1 teljes TRIO csomagot most — majdnem féláron</h3>
       <div><span class="upsell-old">24 990 Ft</span><span class="upsell-new">12 990 Ft 🔥</span></div>
       <p><b>Miért éri meg?</b><br>Így nem kell újra teljes áron rendelned, és nem szakad meg a rutinod, amikor az első csomag elfogy.</p>
       <div style="background:#fff2ee;border:1px solid #ffb199;border-radius:16px;padding:12px;margin:14px 0;font-weight:900;color:#7a1d0d;line-height:1.45">
-        Mai rendelésed: 1 TRIO = 24 990 Ft<br>
-        Most hozzáadva: 2. TRIO csak 12 990 Ft<br>
-        Összesen: 37 980 Ft utánvéttel
+        <span id="upsellBaseSummary">Mai rendelésed: 1 TRIO = 24 990 Ft</span><br>
+        <span id="upsellAddedSummary">Most hozzáadva: 2. TRIO csak 12 990 Ft</span><br>
+        <span id="upsellTotalSummary">Összesen: 37 980 Ft utánvéttel</span>
       </div>
       <button class="btn hot" id="yesUpsell">IGEN — KÉREM A 2. TRIÓT 12 990 Ft-ÉRT</button>
     </div>
@@ -550,7 +550,7 @@ updatePicker(document.querySelector('.pick-bundle'));
 // Production remains on the legacy path unless an explicit preview/test URL opts in.
 const backendParams=new URLSearchParams(window.location.search);
 const orderBackendMode=backendParams.get('cod_backend')==='new-test'?'new-test':'legacy';
-const COD_TEST_BUILD_ID='ONLINE-B02';
+const COD_TEST_BUILD_ID='ONLINE-B03';
 const COD_TEST_DIAGNOSTIC_MARKER='MANUAL-20260809-B02';
 const COD_TEST_ALLOWED_ENDPOINT='https://script.google.com/macros/s/AKfycbz7JiGJYf249KApzoqzoEq3fLgO90q0NQ0h2aLXzHlTME_gJY3aLDGyZ1FqtbJ0ljtEMg/exec';
 const requestedTestBuild=backendParams.get('test_build')||'';
@@ -592,8 +592,51 @@ if(orderBackendMode==='new-test'){
 }
 
 function getProductSku(product){
-  const m={'Testo Booster':'PMLD-1748','Nitric Oxide':'PMLD-1742','Prosztata támogatás':'PMLD-1747','TRIO Bundle':'PMLD-TRIO-BUNDLE'};
+  const m={'Éjszakai Regeneráció':'PMLD-1747','Prosztata támogatás':'PMLD-1747','Testo Booster':'PMLD-1748','Nitric Oxide':'PMLD-1742','TRIO Bundle':'PMLD-TRIO-BUNDLE'};
   return m[product]||'PMLD-UNKNOWN';
+}
+const NEW_COD_OFFER_CATALOG={
+  'Éjszakai Regeneráció':{
+    base:{id:'PMLD-1747',name:'Éjszakai Regeneráció',quantity:1,totalHuf:12990},
+    upsell:{id:'PMLD-1747-PLUS-TRIO',name:'Éjszakai Regeneráció + TRIO',quantity:2,totalHuf:25980}
+  },
+  'Testo Booster':{
+    base:{id:'PMLD-1748',name:'Testo Booster',quantity:1,totalHuf:12990},
+    upsell:{id:'PMLD-1748-PLUS-TRIO',name:'Testo Booster + TRIO',quantity:2,totalHuf:25980}
+  },
+  'Nitric Oxide':{
+    base:{id:'PMLD-1742',name:'Nitric Oxide',quantity:1,totalHuf:12990},
+    upsell:{id:'PMLD-1742-PLUS-TRIO',name:'Nitric Oxide + TRIO',quantity:2,totalHuf:25980}
+  },
+  'TRIO Bundle':{
+    base:{id:'PMLD-TRIO-BUNDLE',name:'TRIO Bundle',quantity:1,totalHuf:24990},
+    upsell:{id:'PMLD-TRIO-BUNDLE-2',name:'2 × TRIO Bundle',quantity:2,totalHuf:37980}
+  }
+};
+function getNewBackendOffer(){
+  const offers=NEW_COD_OFFER_CATALOG[order.product];
+  if(!offers)throw new Error('Unknown new-backend product selection.');
+  return order.upsell?offers.upsell:offers.base;
+}
+function syncNewBackendOfferState(){
+  const offer=getNewBackendOffer();
+  order.quantity=offer.quantity;
+  order.totalPrice=offer.totalHuf;
+  return offer;
+}
+function formatTestHuf(value){return Number(value).toLocaleString('hu-HU')+' Ft'}
+function updateUpsellOfferCopy(){
+  const isTrio=order.product==='TRIO Bundle';
+  document.getElementById('upsellTitle').textContent=isTrio
+    ?'Adj hozzá még 1 teljes TRIO csomagot most — majdnem féláron'
+    :'Adj hozzá 1 teljes TRIO csomagot most — kedvezményes áron';
+  document.getElementById('upsellBaseSummary').textContent='Mai rendelésed: '+order.product+' = '+formatTestHuf(order.price);
+  document.getElementById('upsellAddedSummary').textContent='Most hozzáadva: '+(isTrio?'2. TRIO':'1 TRIO')+' csak 12 990 Ft';
+  document.getElementById('upsellTotalSummary').textContent='Összesen: '+formatTestHuf(order.price+12990)+' utánvéttel';
+  document.getElementById('yesUpsell').textContent=isTrio
+    ?'IGEN — KÉREM A 2. TRIÓT 12 990 Ft-ÉRT'
+    :'IGEN — KÉREM A TRIÓT 12 990 Ft-ÉRT';
+  document.getElementById('noUpsell').textContent='Nem kérem a kedvezményt, maradok ennél: '+order.product+'.';
 }
 function getOrCreatePurchaseEventId(){
   if(!order.event_id){
@@ -656,13 +699,9 @@ function sendOrderToLegacySheet(payload,useBeacon){
     body:body
   }).catch(e=>console.error('Sheet error:',e));
 }
-function getNewBackendOfferId(){
-  const baseSku=getProductSku(order.product);
-  if(!order.upsell)return baseSku;
-  return order.product==='TRIO Bundle'?'PMLD-TRIO-BUNDLE-2':baseSku+'-PLUS-TRIO';
-}
 function buildNewCodBackendPayload(){
   const utm=getUtmParams();
+  const offer=syncNewBackendOfferState();
   return {
     action:'create_order',
     test_marker:COD_TEST_DIAGNOSTIC_MARKER,
@@ -672,9 +711,9 @@ function buildNewCodBackendPayload(){
     address:order.street,
     zip:order.zip,
     city:order.city,
-    product:getNewBackendOfferId(),
-    quantity:String(order.quantity),
-    total_huf:String(order.totalPrice),
+    product:offer.id,
+    quantity:String(offer.quantity),
+    total_huf:String(offer.totalHuf),
     utm_source:utm.utm_source,
     utm_campaign:utm.utm_campaign,
     utm_content:utm.utm_content
@@ -741,12 +780,11 @@ function maskManualTestEmail(value){
   return email.charAt(0)+'•••'+email.slice(at);
 }
 function showNewCodManualReview(){
-  order.totalPrice=order.price+order.upsellPrice;
-  order.quantity=order.upsell?2:1;
-  document.getElementById('codReviewOfferId').textContent=getNewBackendOfferId();
-  document.getElementById('codReviewProduct').textContent=order.product;
-  document.getElementById('codReviewQuantity').textContent=String(order.quantity);
-  document.getElementById('codReviewTotal').textContent=String(order.totalPrice);
+  const offer=syncNewBackendOfferState();
+  document.getElementById('codReviewOfferId').textContent=offer.id;
+  document.getElementById('codReviewProduct').textContent=offer.name;
+  document.getElementById('codReviewQuantity').textContent=String(offer.quantity);
+  document.getElementById('codReviewTotal').textContent=String(offer.totalHuf);
   document.getElementById('codReviewEndpoint').textContent=NEW_COD_TEST_ENDPOINT;
   document.getElementById('codReviewMode').textContent='true';
   document.getElementById('codReviewName').textContent=maskManualTestValue(order.name,1,1);
@@ -886,19 +924,20 @@ function finalizeOrder(useBeacon){
   if(orderBackendMode==='new-test'&&!NEW_COD_TEST_ARMED)throw new Error('NEW BACKEND TEST NOT ARMED.');
   if(orderFinalized)return;orderFinalized=true;
   if(upsellFallbackTimer)clearTimeout(upsellFallbackTimer);
-  const payload=buildOrderPayload();
-  const phoneAlreadyPurchased=hasPhonePurchaseAlreadyFired(order.phone);
   if(orderBackendMode==='new-test'){
+    const offer=syncNewBackendOfferState();
     console.info('NEW TEST FINALIZE ORDER',{
-      selected_offer_id:getNewBackendOfferId(),
-      quantity:order.quantity,
-      expected_price:order.totalPrice,
+      selected_offer_id:offer.id,
+      quantity:offer.quantity,
+      expected_price:offer.totalHuf,
       upsell:order.upsell?'accepted':'declined'
     });
     sendOrderToNewCodBackend(useBeacon);
     console.log('New COD test mode: legacy order writes and Purchase pixels were skipped.');
     return;
   }
+  const payload=buildOrderPayload();
+  const phoneAlreadyPurchased=hasPhonePurchaseAlreadyFired(order.phone);
   console.log('SNAP HU ORDER',payload);
   sendOrderToLegacySheet(payload,useBeacon);
   sendOrderToCODCommandCenter({...order,event_id:payload.event_id,is_duplicate_phone_purchase:phoneAlreadyPurchased});
@@ -937,6 +976,7 @@ document.getElementById('orderForm').addEventListener('submit',e=>{
   order.email=(fd.get('email')||'').trim();
   order.street=fd.get('street').trim();order.city=fd.get('city').trim();order.zip=fd.get('zip').trim();
   order.upsell=false;order.upsellPrice=0;
+  if(orderBackendMode==='new-test')updateUpsellOfferCopy();
   upsellEl.classList.add('show');
   if(upsellFallbackTimer)clearTimeout(upsellFallbackTimer);
   upsellFallbackTimer=setTimeout(()=>{if(!orderFinalized&&upsellEl.classList.contains('show'))fireOrder();},30000);
