@@ -562,9 +562,10 @@ function normalizePhone(phone){
   if(digits.startsWith('0036')&&(digits.length===12||digits.length===13))national=digits.slice(4);
   else if(digits.startsWith('36')&&(digits.length===10||digits.length===11))national=digits.slice(2);
   else if(digits.startsWith('06')&&(digits.length===10||digits.length===11))national=digits.slice(2);
-  const nineDigitPrefixes=['20','30','31','38','50','70','71'];
-  const validNineDigits=national.length===9&&nineDigitPrefixes.includes(national.slice(0,2))&&/^\d{9}$/.test(national);
-  const validEightDigits=national.length===8&&/^[1-9]\d{7}$/.test(national)&&!nineDigitPrefixes.includes(national.slice(0,2));
+  const mobilePrefixes=['20','30','31','50','70'];
+  const nonStandardPrefixes=['38','71'];
+  const validNineDigits=national.length===9&&mobilePrefixes.includes(national.slice(0,2))&&/^\d{9}$/.test(national);
+  const validEightDigits=national.length===8&&/^[1-9]\d{7}$/.test(national)&&!mobilePrefixes.includes(national.slice(0,2))&&!nonStandardPrefixes.includes(national.slice(0,2));
   if(!validNineDigits&&!validEightDigits)return null;
   return '+36'+national;
 }
@@ -614,7 +615,7 @@ async function sendOrderToSheet(payload,useBeacon){
   if(useBeacon&&navigator.sendBeacon){
     try{
       const queued=navigator.sendBeacon(WEBHOOK_URL,new Blob([body],{type:'text/plain;charset=utf-8'}));
-      if(queued)return {accepted:true,channel:'sheet-beacon'};
+      if(queued)return {dispatched:true,channel:'sheet-beacon'};
     }catch(e){}
   }
 
@@ -625,7 +626,7 @@ async function sendOrderToSheet(payload,useBeacon){
     headers:{'Content-Type':'text/plain;charset=utf-8'},
     body:body
   });
-  return {accepted:true,channel:'sheet'};
+  return {dispatched:true,channel:'sheet'};
 }
 const COD_COMMAND_CENTER_URL='https://cod-command-center-three.vercel.app/api/orders';
 const COD_COMMAND_CENTER_API_KEY='0f2c08d4-2741-4098-b9ff-7cfb202df6c6';
@@ -734,13 +735,6 @@ function setOrderButtonsLoading(loading){
 }
 function showOrderSubmitError(message){orderSubmitError.textContent=message;orderSubmitError.classList.add('show')}
 function clearOrderSubmitError(){orderSubmitError.textContent='';orderSubmitError.classList.remove('show')}
-function firstAccepted(promises){
-  return new Promise((resolve,reject)=>{
-    let remaining=promises.length;
-    const fail=()=>{remaining-=1;if(remaining===0)reject(new Error('all order channels failed'))};
-    promises.forEach(promise=>Promise.resolve(promise).then(result=>result&&result.accepted?resolve(result):fail(),fail));
-  });
-}
 function renderThankYou(){
   document.getElementById('summaryName').textContent=order.name;
   document.getElementById('summaryPhone').textContent=formatPhone(order.phone);
@@ -760,12 +754,12 @@ async function finalizeOrder(useBeacon){
     const phoneAlreadyPurchased=hasPhonePurchaseAlreadyFired(order.phone);
     saveOrderSession('submitting');
     console.log('SNAP HU ORDER',payload);
-    const orderChannels=[
-      sendOrderToSheet(payload,useBeacon),
-      sendOrderToCODCommandCenter({...order,event_id:payload.event_id,is_duplicate_phone_purchase:phoneAlreadyPurchased})
-    ];
+    sendOrderToSheet(payload,useBeacon).catch(error=>console.warn('Sheet error:',error));
     let accepted=false;
-    try{await firstAccepted(orderChannels);accepted=true}catch(e){}
+    try{
+      const codResult=await sendOrderToCODCommandCenter({...order,event_id:payload.event_id,is_duplicate_phone_purchase:phoneAlreadyPurchased});
+      accepted=!!(codResult&&codResult.accepted);
+    }catch(error){console.warn('COD Command Center failed',error)}
     if(!accepted){
       orderFinalized=false;orderSubmitting=false;finalizePromise=null;setOrderButtonsLoading(false);
       saveOrderSession('failed');
