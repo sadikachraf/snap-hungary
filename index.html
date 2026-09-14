@@ -45,7 +45,7 @@ footer{background:#082a77;color:#fff;padding:54px 0 70px}.footer-logo img{height
 /* STICKY CTA */
 .sticky-cta{position:fixed;z-index:80;left:0;right:0;bottom:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:rgba(255,255,255,.94);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-top:1px solid rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center;gap:12px;transform:translateY(120%);transition:.25s ease}.sticky-cta.show{transform:translateY(0)}.sticky-cta .btn{flex:1;max-width:520px;min-height:56px;font-size:17px}.sticky-cta img{width:82px;height:52px;object-fit:contain;border-radius:12px}
 /* MODALS */
-.upsell,.thankyou,.ing-modal{position:fixed;inset:0;z-index:120;background:rgba(0,0,0,.60);display:none;align-items:center;justify-content:center;padding:22px}.upsell.show,.thankyou.show,.ing-modal.show{display:flex}.upsell-box,.thank-card{background:#fff;border-radius:28px;width:min(560px,100%);max-height:92vh;overflow:auto;padding:24px;box-shadow:0 30px 80px rgba(0,0,0,.25)}.upsell{background:#101828}.upsell-box{text-align:center;background:#fffdf8}.upsell-offer{border:2px solid #ff6424;background:#fff;border-radius:24px;padding:18px}.upsell-offer img{height:150px;object-fit:contain;margin:auto}.upsell-old{text-decoration:line-through;color:#98a2b3;font-weight:900;font-size:24px}.upsell-new{display:block;font-size:52px;font-weight:900;color:#d92d20}.no-link{display:block;color:#667085;text-decoration:underline;font-weight:800;font-size:13px;margin-top:14px;cursor:pointer}.thankyou{text-align:center;background:rgba(8,42,119,.78)}
+.upsell,.thankyou,.ing-modal{position:fixed;inset:0;z-index:120;background:rgba(0,0,0,.60);display:none;align-items:center;justify-content:center;padding:22px}.upsell.show,.thankyou.show,.ing-modal.show{display:flex}.upsell-box,.thank-card{background:#fff;border-radius:28px;width:min(560px,100%);max-height:92vh;overflow:auto;padding:24px;box-shadow:0 30px 80px rgba(0,0,0,.25)}.upsell{background:#101828}.upsell-box{text-align:center;background:#fffdf8}.upsell-offer{border:2px solid #ff6424;background:#fff;border-radius:24px;padding:18px}.upsell-offer img{height:150px;object-fit:contain;margin:auto}.upsell-old{text-decoration:line-through;color:#98a2b3;font-weight:900;font-size:24px}.upsell-new{display:block;font-size:52px;font-weight:900;color:#d92d20}.no-link{display:block;color:#667085;text-decoration:underline;font-weight:800;font-size:13px;margin-top:14px;cursor:pointer}.order-submit-error{display:none;margin-top:14px;padding:11px 13px;border:1px solid #fda29b;border-radius:12px;background:#fef3f2;color:#b42318;font-size:13px;line-height:1.45;font-weight:800}.order-submit-error.show{display:block}.thankyou{text-align:center;background:rgba(8,42,119,.78)}
 /* ING MODAL */
 .ing-modal{z-index:130}.ing-box{width:min(680px,calc(100% - 28px));max-height:88vh;background:#fff;border-radius:34px;overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:0 34px 90px rgba(0,0,0,.28)}.ing-tabs{display:flex;justify-content:center;align-items:center;gap:14px;padding:26px 64px 22px;border-bottom:1px solid #ececec;background:#fff;flex-shrink:0}.ing-tab{width:88px;height:88px;border-radius:50%;border:2.5px solid #d0d5dd;background:#fff;display:grid;place-items:center;padding:10px;cursor:pointer;transition:.2s ease}.ing-tab.active{border-color:#082a77;border-width:3px;background:#f0f4ff}.ing-tab img{width:64px;height:64px;object-fit:contain;border-radius:50%}.ing-arrow{position:absolute;top:52px;width:40px;height:40px;border-radius:50%;border:0;background:#e8f0e2;color:#3a5a30;font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:4;font-weight:700;transition:.15s}.ing-arrow:hover{background:#d2e8c6}.ing-arrow.prev{left:16px}.ing-arrow.next{right:16px}.ing-panel{display:none;padding:22px 28px 70px;overflow-y:auto;flex:1}.ing-panel.active{display:flex;flex-direction:column;gap:0}.ing-modal-item{display:grid;grid-template-columns:80px 1fr;gap:18px;align-items:center;padding:16px 0;border-bottom:1px solid #f0f0f0}.ing-modal-item:last-child{border-bottom:none}.ing-modal-item img{width:76px;height:76px;border-radius:50%;object-fit:cover;background:#e8eef8}.ing-modal-item h3{font-size:17px;margin:0 0 4px;color:#10245d;font-weight:900}.ing-modal-item p{font-size:14px;line-height:1.45;color:#667085;margin:0}.ing-modal-item b{color:#10245d;font-weight:800}.ing-close{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);z-index:5;border:0;background:#f0f0f0;border-radius:50%;width:48px;height:48px;font-size:26px;color:#333;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.15)}
 .fade{opacity:0;transform:translateY(16px);transition:.65s ease}.fade.in{opacity:1;transform:none}
@@ -395,6 +395,7 @@ else{window.addEventListener('load',function(){setTimeout(window.__loadMarketing
       <button class="btn hot" id="yesUpsell">IGEN — KÉREM A 2. TRIÓT 12 990 Ft-ÉRT</button>
     </div>
     <span class="no-link" id="noUpsell">Nem kérem a kedvezményt, maradok az 1 csomagnál.</span>
+    <div class="order-submit-error" id="orderSubmitError" role="alert" aria-live="assertive"></div>
   </div>
 </div>
 
@@ -443,7 +444,8 @@ else{window.addEventListener('load',function(){setTimeout(window.__loadMarketing
 // ── ORDER STATE ──
 let order={name:"",phone:"",street:"",city:"",zip:"",product:"TRIO Bundle",quantity:1,price:24990,upsell:false,upsellPrice:0,totalPrice:24990};
 const upsellEl=document.getElementById('upsell'),thankyou=document.getElementById('thankyou'),floatingNav=document.getElementById('floatingNav'),stickyCta=document.getElementById('stickyCta');
-let lastScrollY=window.scrollY,orderFinalized=false,orderSubmitted=false,purchaseEventFired=false,metaPurchaseEventFired=false,upsellFallbackTimer=null;
+const yesUpsell=document.getElementById('yesUpsell'),noUpsell=document.getElementById('noUpsell'),orderSubmitError=document.getElementById('orderSubmitError');
+let lastScrollY=window.scrollY,orderFinalized=false,orderSubmitted=false,orderSubmitting=false,purchaseEventFired=false,metaPurchaseEventFired=false,upsellFallbackTimer=null,finalizePromise=null;
 
 // ── SCROLL HIDE/SHOW NAV ──
 window.addEventListener('scroll',()=>{
@@ -621,24 +623,23 @@ function buildCommandCenterPayload(orderData){
   };
 }
 async function sendOrderToCODCommandCenter(orderData){
-  if(!orderData||!orderData.name||!orderData.phone) return;
+  if(!orderData||!orderData.name||!orderData.phone)throw new Error('Missing order data');
   const payload=buildCommandCenterPayload(orderData);
   const fingerprint=[payload.customer_name,payload.phone,payload.city,payload.address,payload.package_name,payload.quantity,payload.order_value,payload.currency].join('||');
-  if(codOrderFingerprints.has(fingerprint)) return;
+  if(codOrderFingerprints.has(fingerprint))return {accepted:true,duplicateBlocked:true};
   const logPayload={...payload,landing_page_api_key:'***'+String(COD_COMMAND_CENTER_API_KEY).slice(-4)};
   console.log('COD Command Center submit started');
   console.log('COD payload', logPayload);
-  try{
-    const response=await fetch(COD_COMMAND_CENTER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-    const responseBody=await response.text();
-    console.log('COD response status',response.status);
-    console.log('COD response body',responseBody);
-    if(!response.ok) throw new Error('status '+response.status);
-    codOrderFingerprints.add(fingerprint);
-    console.log('COD Command Center success');
-  }catch(err){
-    console.warn('COD Command Center failed',err);
-  }
+  const response=await fetch(COD_COMMAND_CENTER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),keepalive:true});
+  const responseBody=await response.text();
+  let responseData=null;
+  try{responseData=JSON.parse(responseBody)}catch(e){}
+  console.log('COD response status',response.status);
+  console.log('COD response body',responseBody);
+  if(!response.ok||!responseData||responseData.success!==true)throw new Error('COD order was not accepted (status '+response.status+')');
+  codOrderFingerprints.add(fingerprint);
+  console.log('COD Command Center success');
+  return {accepted:true,orderNumber:responseData.order_number||''};
 }
 window.testCODCommandCenterSubmit=async function(){
   const payload={
@@ -695,22 +696,59 @@ function firePurchase(payload){
     });
   }
 }
-function finalizeOrder(useBeacon){
-  if(orderFinalized)return;orderFinalized=true;
-  if(upsellFallbackTimer)clearTimeout(upsellFallbackTimer);
-  const payload=buildOrderPayload();
-  const phoneAlreadyPurchased=hasPhonePurchaseAlreadyFired(order.phone);
-  console.log('SNAP HU ORDER',payload);
-  sendOrderToSheet(payload,useBeacon);
-  sendOrderToCODCommandCenter({...order,event_id:payload.event_id,is_duplicate_phone_purchase:phoneAlreadyPurchased});
-  if(!phoneAlreadyPurchased){
-    firePurchase(payload);
-    markPhonePurchaseFired(order.phone,payload.event_id);
-  }else{
-    console.log('Duplicate phone purchase blocked from Meta:',order.phone);
+function setOrderSubmitting(submitting){
+  orderSubmitting=submitting;
+  yesUpsell.disabled=submitting;
+  noUpsell.style.pointerEvents=submitting?'none':'';
+  noUpsell.style.opacity=submitting?'.55':'';
+  if(submitting){
+    if(!yesUpsell.dataset.originalText)yesUpsell.dataset.originalText=yesUpsell.textContent;
+    yesUpsell.textContent='RENDELÉS KÜLDÉSE…';
+  }else if(yesUpsell.dataset.originalText){
+    yesUpsell.textContent=yesUpsell.dataset.originalText;
   }
 }
-function fireOrder(){finalizeOrder(false);upsellEl.classList.remove('show');thankyou.classList.add('show');}
+function showOrderSubmitError(){
+  orderSubmitError.textContent='A rendelést most nem sikerült rögzíteni. Ellenőrizd az internetkapcsolatot, majd próbáld újra.';
+  orderSubmitError.classList.add('show');
+}
+async function finalizeOrder(useBeacon){
+  if(finalizePromise)return finalizePromise;
+  finalizePromise=(async()=>{
+    if(orderFinalized)return true;
+    if(upsellFallbackTimer)clearTimeout(upsellFallbackTimer);
+    orderSubmitError.classList.remove('show');
+    setOrderSubmitting(true);
+    const payload=buildOrderPayload();
+    const phoneAlreadyPurchased=hasPhonePurchaseAlreadyFired(order.phone);
+    console.log('SNAP HU ORDER',payload);
+    sendOrderToSheet(payload,useBeacon);
+    try{
+      await sendOrderToCODCommandCenter({...order,event_id:payload.event_id,is_duplicate_phone_purchase:phoneAlreadyPurchased});
+    }catch(err){
+      console.warn('COD Command Center failed',err);
+      setOrderSubmitting(false);
+      finalizePromise=null;
+      showOrderSubmitError();
+      return false;
+    }
+    orderFinalized=true;
+    if(!phoneAlreadyPurchased){
+      firePurchase(payload);
+      markPhonePurchaseFired(order.phone,payload.event_id);
+    }else{
+      console.log('Duplicate phone purchase blocked from Meta:',order.phone);
+    }
+    setOrderSubmitting(false);
+    return true;
+  })();
+  return finalizePromise;
+}
+async function fireOrder(){
+  const accepted=await finalizeOrder(false);
+  if(!accepted)return;
+  upsellEl.classList.remove('show');thankyou.classList.add('show');
+}
 
 // ── FORM SUBMIT ──
 document.getElementById('orderForm').addEventListener('submit',e=>{
@@ -727,8 +765,8 @@ document.getElementById('orderForm').addEventListener('submit',e=>{
   if(upsellFallbackTimer)clearTimeout(upsellFallbackTimer);
   upsellFallbackTimer=setTimeout(()=>{if(!orderFinalized&&upsellEl.classList.contains('show'))fireOrder();},30000);
 });
-document.getElementById('yesUpsell').onclick=()=>{order.upsell=true;order.upsellPrice=12990;fireOrder()};
-document.getElementById('noUpsell').onclick=()=>{order.upsell=false;order.upsellPrice=0;fireOrder()};
+yesUpsell.onclick=()=>{if(orderSubmitting)return;order.upsell=true;order.upsellPrice=12990;fireOrder()};
+noUpsell.onclick=()=>{if(orderSubmitting)return;order.upsell=false;order.upsellPrice=0;fireOrder()};
 window.addEventListener('pagehide',()=>{if(!orderFinalized&&upsellEl.classList.contains('show')){order.upsell=false;order.upsellPrice=0;finalizeOrder(true);}});
 
 // ── INGREDIENTS MODAL ──
