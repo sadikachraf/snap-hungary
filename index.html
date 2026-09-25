@@ -743,15 +743,17 @@ async function finalizeOrder(useBeacon){
     const phoneAlreadyPurchased=hasPhonePurchaseAlreadyFired(order.phone);
     console.log('SNAP HU ORDER',payload);
     sendOrderToSheet(payload,useBeacon);
+    const commandCenterRequest=sendOrderToCODCommandCenter({...order,event_id:payload.event_id,is_duplicate_phone_purchase:phoneAlreadyPurchased});
+    let commandCenterConfirmed=false;
     try{
-      await sendOrderToCODCommandCenter({...order,event_id:payload.event_id,is_duplicate_phone_purchase:phoneAlreadyPurchased});
+      await Promise.race([
+        commandCenterRequest.then(()=>{commandCenterConfirmed=true},err=>{console.warn('COD Command Center request failed; the sheet webhook has already received the order.',err)}),
+        new Promise(resolve=>setTimeout(resolve,5000))
+      ]);
     }catch(err){
-      console.warn('COD Command Center failed',err);
-      setOrderSubmitting(false);
-      finalizePromise=null;
-      showOrderSubmitError();
-      return false;
+      console.warn('COD Command Center request failed; the sheet webhook has already received the order.',err);
     }
+    if(!commandCenterConfirmed)console.warn('COD Command Center is still processing; continuing to thank-you screen.');
     orderFinalized=true;
     if(!phoneAlreadyPurchased){
       firePurchase(payload);
