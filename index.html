@@ -643,7 +643,14 @@ async function sendOrderToCODCommandCenter(orderData){
   const logPayload={...payload,landing_page_api_key:'***'+String(COD_COMMAND_CENTER_API_KEY).slice(-4)};
   console.log('COD Command Center submit started');
   console.log('COD payload', logPayload);
-  const response=await fetch(COD_COMMAND_CENTER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),keepalive:true});
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),15000);
+  let response;
+  try{
+    response=await fetch(COD_COMMAND_CENTER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),keepalive:true,signal:controller.signal});
+  }finally{
+    clearTimeout(timeout);
+  }
   const responseBody=await response.text();
   let responseData=null;
   try{responseData=JSON.parse(responseBody)}catch(e){}
@@ -722,7 +729,7 @@ function setOrderSubmitting(submitting){
   }
 }
 function showOrderSubmitError(){
-  orderSubmitError.textContent='A rendelést most nem sikerült rögzíteni. Ellenőrizd az internetkapcsolatot, majd próbáld újra.';
+  orderSubmitError.textContent='A rendelés visszaigazolása túl sokáig tartott. Ellenőrizd az internetkapcsolatot, majd próbáld újra.';
   orderSubmitError.classList.add('show');
 }
 async function finalizeOrder(useBeacon){
@@ -760,7 +767,10 @@ async function finalizeOrder(useBeacon){
 async function fireOrder(){
   const accepted=await finalizeOrder(false);
   if(!accepted)return;
-  upsellEl.classList.remove('show');thankyou.classList.add('show');
+  upsellEl.classList.remove('show');
+  thankyou.classList.add('show');
+  thankyou.setAttribute('aria-hidden','false');
+  thankyou.scrollTop=0;
 }
 
 // ── FORM SUBMIT ──
