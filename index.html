@@ -235,6 +235,7 @@ else{window.addEventListener('load',function(){setTimeout(window.__loadMarketing
       <form class="form" id="orderForm">
         <div class="field"><label>Teljes név</label><input name="name" required autocomplete="name" placeholder="Pl.: Kovács Péter"></div>
         <div class="field"><label>Telefonszám</label><input name="phone" required inputmode="tel" autocomplete="tel" placeholder="Pl.: 06 30 123 4567"></div>
+        <div class="field"><label>E-mail cím</label><input name="email" type="email" required autocomplete="email" inputmode="email" placeholder="Pl.: nev@example.com"></div>
         <div class="field"><label>Utca és házszám</label><input name="street" required autocomplete="street-address" placeholder="Pl.: Kossuth Lajos utca 12"></div>
         <div class="field"><label>Város</label><input name="city" required autocomplete="address-level2" placeholder="Pl.: Budapest"></div>
         <div class="field"><label>Irányítószám</label><input name="zip" required inputmode="numeric" autocomplete="postal-code" placeholder="Pl.: 1051"></div>
@@ -441,7 +442,7 @@ else{window.addEventListener('load',function(){setTimeout(window.__loadMarketing
 
 <script>
 // ── ORDER STATE ──
-let order={name:"",phone:"",street:"",city:"",zip:"",product:"TRIO Bundle",quantity:1,price:24990,upsell:false,upsellPrice:0,totalPrice:24990};
+let order={name:"",phone:"",email:"",street:"",city:"",zip:"",product:"TRIO Bundle",quantity:1,price:24990,upsell:false,upsellPrice:0,totalPrice:24990};
 const upsellEl=document.getElementById('upsell'),thankyou=document.getElementById('thankyou'),floatingNav=document.getElementById('floatingNav'),stickyCta=document.getElementById('stickyCta'),inlineForm=document.getElementById('inlineForm');
 const yesUpsell=document.getElementById('yesUpsell'),noUpsell=document.getElementById('noUpsell'),orderSubmitError=document.getElementById('orderSubmitError');
 let lastScrollY=window.scrollY,orderFinalized=false,orderSubmitted=false,orderSubmitting=false,purchaseEventFired=false,metaPurchaseEventFired=false,upsellFallbackTimer=null,finalizePromise=null;
@@ -562,7 +563,7 @@ function buildOrderPayload(){
     city:order.city,
     zip_code:order.zip,
     customer_address:order.street,
-    customer_email:'',
+    customer_email:order.email,
     quantity:order.quantity,
     note:'Product: '+order.product+' | Base price: '+order.price+' Ft | Upsell: '+(order.upsell?'yes +'+order.upsellPrice+' Ft':'no')+' | Source: snap-hu',
     date:new Date().toISOString()
@@ -613,6 +614,7 @@ function buildCommandCenterPayload(orderData){
     is_duplicate_phone_purchase:!!orderData.is_duplicate_phone_purchase,
     customer_name:orderData.name||'',
     phone:orderData.phone||'',
+    customer_email:orderData.email||'',
     city:orderData.city||'',
     address:address,
     package_name:orderData.product||'',
@@ -769,7 +771,7 @@ document.getElementById('orderForm').addEventListener('submit',e=>{
   const submitBtn=e.target.querySelector('button[type="submit"]');
   if(submitBtn)submitBtn.disabled=true;
   const fd=new FormData(e.target);
-  order.name=fd.get('name').trim();order.phone=fd.get('phone').trim();
+  order.name=fd.get('name').trim();order.phone=fd.get('phone').trim();order.email=fd.get('email').trim();
   order.street=fd.get('street').trim();order.city=fd.get('city').trim();order.zip=fd.get('zip').trim();
   order.upsell=false;order.upsellPrice=0;
   upsellEl.classList.add('show');
